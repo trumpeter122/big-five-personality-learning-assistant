@@ -17,11 +17,11 @@ const choiceBank = Object.entries(choiceModules).reduce((acc, [path, mod]) => {
 }, {});
 
 export const traitLabels = {
-  O: { zh: '开放性', en: 'Openness', tone: '创意探索' },
-  C: { zh: '尽责性', en: 'Conscientiousness', tone: '计划执行' },
-  E: { zh: '外向性', en: 'Extraversion', tone: '社交驱动' },
-  A: { zh: '宜人性', en: 'Agreeableness', tone: '合作共情' },
-  N: { zh: '神经质', en: 'Neuroticism', tone: '情绪波动' }
+  O: { zh: '开放性', en: 'Openness', tone: '创意探索', icon: 'O' },
+  C: { zh: '尽责性', en: 'Conscientiousness', tone: '计划执行', icon: 'C' },
+  E: { zh: '外向性', en: 'Extraversion', tone: '社交驱动', icon: 'E' },
+  A: { zh: '宜人性', en: 'Agreeableness', tone: '合作共情', icon: 'A' },
+  N: { zh: '神经质', en: 'Neuroticism', tone: '情绪波动', icon: 'N' }
 };
 
 export const learningPlaybook = {

@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useAssessment } from '../context/AssessmentContext';
 import { learningPlaybook, levelText, traitLabels } from '../assessment';
+import { traitIcons } from '../components/icons';
 
 function ResultsPage() {
   const { report, resetAll } = useAssessment();
@@ -53,15 +54,24 @@ function ResultsPage() {
       </div>
 
       <div className="result-grid">
-        {report.generated.map((item) => {
-          const level = report.scores[item.domain]?.result || 'neutral';
-          const strategies = learningPlaybook[item.domain]?.[level] || [];
-          return (
-            <div key={item.domain} className="result-card">
-              <div className="result-head">
-                <div className="pill muted">{traitLabels[item.domain].zh}</div>
-                <div className={`level ${level}`}>{levelText[level]}</div>
-              </div>
+          {report.generated.map((item) => {
+            const level = report.scores[item.domain]?.result || 'neutral';
+            const strategies = learningPlaybook[item.domain]?.[level] || [];
+            return (
+              <div key={item.domain} className="result-card">
+                <div className="result-head">
+                  <div
+                    className="pill muted"
+                    title={traitLabels[item.domain].zh}
+                    aria-label={traitLabels[item.domain].zh}
+                  >
+                    {traitIcons[item.domain] && (() => {
+                      const Icon = traitIcons[item.domain];
+                      return <Icon />;
+                    })()}
+                  </div>
+                  <div className={`level ${level}`}>{levelText[level]}</div>
+                </div>
               <p className="result-title">{item.title}</p>
               <p className="result-text" dangerouslySetInnerHTML={{ __html: item.scoreText || '' }} />
               {item.facets?.length > 0 && (

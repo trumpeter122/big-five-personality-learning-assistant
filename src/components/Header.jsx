@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { useAssessment } from '../context/AssessmentContext';
+import { ThemeIcon } from './icons';
 
 function Header() {
   const { theme, setTheme } = useAssessment();
@@ -37,8 +38,8 @@ function Header() {
         </nav>
       </div>
       <div className="header-actions">
-        <button className="ghost" onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
-          {theme === 'light' ? '切换暗色' : '切换亮色'}
+        <button className="ghost icon-btn" onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
+          <ThemeIcon mode={theme} />
         </button>
       </div>
     </header>

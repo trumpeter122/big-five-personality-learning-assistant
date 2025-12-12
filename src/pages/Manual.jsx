@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useAssessment } from '../context/AssessmentContext';
 import { traitLabels } from '../assessment';
+import { traitIcons } from '../components/icons';
 
 function ManualPage() {
   const { manualScores, setManualScores, submitManual, resetAll } = useAssessment();
@@ -25,7 +26,12 @@ function ManualPage() {
         {Object.entries(traitLabels).map(([key, meta]) => (
           <div key={key} className="manual-card">
             <div className="manual-head">
-              <div className="pill muted">{meta.zh}</div>
+              <div className="pill muted" title={meta.zh} aria-label={meta.zh}>
+                {traitIcons[key] && (() => {
+                  const Icon = traitIcons[key];
+                  return <Icon />;
+                })()}
+              </div>
               <span className="score">{manualScores[key]}</span>
             </div>
             <p className="tone">

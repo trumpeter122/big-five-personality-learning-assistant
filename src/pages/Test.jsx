@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAssessment } from '../context/AssessmentContext';
 import { traitLabels, languageOptions } from '../assessment';
+import { traitIcons } from '../components/icons';
 
 function TestPage() {
   const {
@@ -80,7 +81,12 @@ function TestPage() {
             <div key={question.id} className="question-card">
               <div className="question-meta">
                 <span className="pill muted">Q{question.num}</span>
-                <span className="pill muted">{traitLabels[question.domain].zh}</span>
+                <span className="pill muted" title={traitLabels[question.domain].zh} aria-label={traitLabels[question.domain].zh}>
+                  {traitIcons[question.domain] && (() => {
+                    const Icon = traitIcons[question.domain];
+                    return <Icon />;
+                  })()}
+                </span>
               </div>
               <p className="question-text">{question.text}</p>
               <div className="choices">
