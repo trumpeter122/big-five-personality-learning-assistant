@@ -1,4 +1,4 @@
-import { LuSparkles, LuCompass, LuSunMedium, LuHandshake, LuWind, LuMoon, LuSun } from 'react-icons/lu';
+import { LuSparkles, LuCompass, LuSunMedium, LuHandshake, LuWind, LuMoon, LuSun, LuX } from 'react-icons/lu';
 
 export const traitIcons = {
   O: LuSparkles,
@@ -9,3 +9,5 @@ export const traitIcons = {
 };
 
 export const ThemeIcon = ({ mode }) => (mode === 'light' ? <LuMoon /> : <LuSun />);
+
+export const CloseIcon = LuX;
