@@ -8,15 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@bigfive-org/questions':
-        specifier: ^1.2.1
-        version: 1.2.1
-      '@bigfive-org/results':
-        specifier: ^1.2.5
-        version: 1.2.5
-      '@bigfive-org/score':
-        specifier: ^1.0.0
-        version: 1.0.0
       react:
         specifier: ^19.2.0
         version: 19.2.3
@@ -136,15 +127,6 @@ packages:
   '@babel/types@7.28.5':
     resolution: {integrity: sha512-qQ5m48eI/MFLQ5PxQj4PFaprjyCTLI37ElWMmNs0K8Lk3dVeOdNpB3ks8jc7yM5CDmVC73eMVk/trk3fgmrUpA==}
     engines: {node: '>=6.9.0'}
-
-  '@bigfive-org/questions@1.2.1':
-    resolution: {integrity: sha512-YTZk+1eK6Iqy9oT+M+4cw/0JyZNVweqY89d6ovtSNSwgABIAGS4qehJD6mwYx5iJlXjA4YeT1MWS5lq2jrbQpA==}
-
-  '@bigfive-org/results@1.2.5':
-    resolution: {integrity: sha512-XPOtSCW4mhfJ/Lqw2oM9ggnXpVY/QGdO666NKdzLRKPM2TYaVsGRlQefmw09rIIxe0FHa0yzVvNpS2/f5zC/4Q==}
-
-  '@bigfive-org/score@1.0.0':
-    resolution: {integrity: sha512-O/YRsyLXXTpRLClLYVU6sqQA9WPVQHobkWlG+V3PGWumiuG2wKp98S8oqlWA1b/ahm5NyU5DpiNOiu8KPr1EiQ==}
 
   '@esbuild/aix-ppc64@0.25.12':
     resolution: {integrity: sha512-Hhmwd6CInZ3dwpuGTF8fJG6yoWmsToE+vYgD4nytZVxcu1ulHpUQRAB1UJ8+N1Am3Mz4+xOByoQoSZf4D+CpkA==}
@@ -1098,12 +1080,6 @@ snapshots:
     dependencies:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.28.5
-
-  '@bigfive-org/questions@1.2.1': {}
-
-  '@bigfive-org/results@1.2.5': {}
-
-  '@bigfive-org/score@1.0.0': {}
 
   '@esbuild/aix-ppc64@0.25.12':
     optional: true

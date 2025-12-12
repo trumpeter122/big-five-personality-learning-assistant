@@ -11,10 +11,7 @@
   },
   "dependencies": {
     "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "@bigfive-org/questions": "^1.2.1",
-    "@bigfive-org/results": "^1.2.5",
-    "@bigfive-org/score": "^1.0.0"
+    "react-dom": "^19.2.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
