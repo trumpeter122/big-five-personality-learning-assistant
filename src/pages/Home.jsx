@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useAssessment } from '../App';
+import { useAssessment } from '../context/AssessmentContext';
 
 function Home() {
   const { resetAll } = useAssessment();

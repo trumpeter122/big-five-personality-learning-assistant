@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useAssessment } from '../App';
+import { useAssessment } from '../context/AssessmentContext';
 import { learningPlaybook, levelText, traitLabels } from '../assessment';
 
 function ResultsPage() {

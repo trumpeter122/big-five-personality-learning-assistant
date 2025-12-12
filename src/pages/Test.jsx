@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAssessment } from '../App';
+import { useAssessment } from '../context/AssessmentContext';
 import { traitLabels } from '../assessment';
 
 function TestPage() {
