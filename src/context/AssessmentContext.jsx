@@ -10,7 +10,7 @@ export function useAssessment() {
 
 export function AssessmentProvider({ children }) {
   const [theme, setTheme] = useState('light');
-  const [language] = useState('zh-cn');
+  const [language, setLanguage] = useState('zh-cn');
   const [page, setPage] = useState(0);
   const [answers, setAnswers] = useState({});
   const [manualScores, setManualScores] = useState({ O: 3, C: 3, E: 3, A: 3, N: 3 });
@@ -24,6 +24,12 @@ export function AssessmentProvider({ children }) {
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
+
+  useEffect(() => {
+    setAnswers({});
+    setReport(null);
+    setPage(0);
+  }, [language]);
 
   const resetAll = () => {
     setAnswers({});
@@ -69,6 +75,7 @@ export function AssessmentProvider({ children }) {
     theme,
     setTheme,
     language,
+    setLanguage,
     questions,
     currentQuestions,
     totalPages,

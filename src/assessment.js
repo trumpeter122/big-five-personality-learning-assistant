@@ -1,8 +1,20 @@
-import zhQuestions from '../docs/packages/questions/src/data/zh-cn/questions';
-import zhChoices from '../docs/packages/questions/src/data/zh-cn/choices';
-import enQuestions from '../docs/packages/questions/src/data/en/questions';
-import enChoices from '../docs/packages/questions/src/data/en/choices';
 import templateEn from '../docs/packages/results/src/data/en';
+import languages from '../docs/packages/questions/src/data/languages';
+
+const questionModules = import.meta.glob('../docs/packages/questions/src/data/*/questions.ts', { eager: true });
+const choiceModules = import.meta.glob('../docs/packages/questions/src/data/*/choices.ts', { eager: true });
+
+const questionBank = Object.entries(questionModules).reduce((acc, [path, mod]) => {
+  const code = path.split('/data/')[1].split('/')[0];
+  acc[code] = mod.default;
+  return acc;
+}, {});
+
+const choiceBank = Object.entries(choiceModules).reduce((acc, [path, mod]) => {
+  const code = path.split('/data/')[1].split('/')[0];
+  acc[code] = mod.default;
+  return acc;
+}, {});
 
 export const traitLabels = {
   O: { zh: '开放性', en: 'Openness', tone: '创意探索' },
@@ -91,16 +103,16 @@ export const levelText = {
   low: '偏低'
 };
 
-export function buildQuestions(language) {
-  const data =
-    language === 'zh-cn'
-      ? { questions: zhQuestions, choices: zhChoices }
-      : { questions: enQuestions, choices: enChoices };
+export const languageOptions = languages;
 
-  return data.questions.map((question, index) => ({
+export function buildQuestions(language) {
+  const questions = questionBank[language] || questionBank['en'];
+  const choices = choiceBank[language] || choiceBank['en'];
+
+  return questions.map((question, index) => ({
     ...question,
     num: index + 1,
-    choices: data.choices[question.keyed]
+    choices: choices[question.keyed]
   }));
 }
 
