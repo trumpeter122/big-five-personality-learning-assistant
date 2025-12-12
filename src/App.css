@@ -14,6 +14,17 @@
   align-items: flex-start;
 }
 
+.header-left {
+  max-width: 820px;
+}
+
+.brand-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 h1 {
   margin: 0 0 8px 0;
   font-size: clamp(28px, 3vw, 36px);
@@ -46,6 +57,29 @@ p {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.nav-link {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: rgba(44, 116, 179, 0.05);
+  color: var(--text);
+  font-weight: 700;
+  transition: all 0.18s ease;
+}
+
+.nav-link.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(44, 116, 179, 0.14);
 }
 
 .pill {
@@ -84,6 +118,12 @@ p {
   border-radius: 10px;
   padding: 22px;
   box-shadow: var(--shadow);
+}
+
+.page-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
 .hero {
