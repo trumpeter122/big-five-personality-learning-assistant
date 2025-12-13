@@ -5,6 +5,7 @@ import { learningPlaybook, levelText, traitLabels } from '../assessment';
 import { traitIcons, CloseIcon } from '../components/icons';
 import { studyCards } from '../data/cards';
 import { useCopy } from '../hooks/useCopy';
+import { exportReportPdf } from '../utils/exportReport';
 
 function ResultsPage() {
   const { report, resetAll } = useAssessment();
@@ -62,12 +63,23 @@ function ResultsPage() {
 
   const [drawn, setDrawn] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   const drawCard = () => {
     if (!deck.length) return;
     const pick = deck[Math.floor(Math.random() * deck.length)];
     setDrawn({ ...pick, id: `${pick.domain}-${Math.random()}` });
     setShowModal(true);
+  };
+
+  const handleExport = () => {
+    if (!report) return;
+    setIsExporting(true);
+    const ok = exportReportPdf(report, c);
+    if (!ok) {
+      window.alert?.(c.exportPdfError);
+    }
+    setTimeout(() => setIsExporting(false), 400);
   };
 
   return (
@@ -194,24 +206,32 @@ function ResultsPage() {
       </div>
 
       <div className="panel-actions" style={{ marginTop: '8px' }}>
-        <button
-          className="ghost"
-          onClick={() => {
-            resetAll();
-            navigate('/test');
-          }}
-        >
-          {c.retest}
-        </button>
-        <button
-          className="ghost"
-          onClick={() => {
-            resetAll();
-            navigate('/manual');
-          }}
-        >
-          {c.reinput}
-        </button>
+        <div className="panel-cta" style={{ alignItems: 'center', flexWrap: 'wrap' }}>
+          <button className="primary" onClick={handleExport} disabled={isExporting}>
+            {isExporting ? c.exportingPdf : c.exportPdf}
+          </button>
+          <p className="hint">{c.exportPdfHint}</p>
+        </div>
+        <div className="panel-cta">
+          <button
+            className="ghost"
+            onClick={() => {
+              resetAll();
+              navigate('/test');
+            }}
+          >
+            {c.retest}
+          </button>
+          <button
+            className="ghost"
+            onClick={() => {
+              resetAll();
+              navigate('/manual');
+            }}
+          >
+            {c.reinput}
+          </button>
+        </div>
       </div>
     </section>
   );
