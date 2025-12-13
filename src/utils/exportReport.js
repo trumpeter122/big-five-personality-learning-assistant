@@ -1,4 +1,4 @@
-import { learningPlaybook, levelText, traitLabels } from '../assessment';
+import { getLearningPlaybook, getLevelText, getTraitNames, getResultText } from '../assessment';
 
 const styles = `
   :root { color-scheme: light; }
@@ -28,33 +28,36 @@ const styles = `
   @media print { body { background: #fff; } .report { margin: 0; } }
 `;
 
-function buildSummaryRows(report) {
+function buildSummaryRows(report, levelLabels, uiLanguage) {
   return report.generated
     .map((item) => {
       const score = report.scores[item.domain];
       const level = score?.result || 'neutral';
       const rawScore = score?.score != null ? score.score.toFixed(0) : '-';
       const avg = score?.count ? (score.score / score.count).toFixed(2) : '-';
-      const label = traitLabels[item.domain]?.zh || item.domain;
+      const names = getTraitNames(item.domain, uiLanguage);
+      const label = names.main;
       return `
         <tr>
           <td><span class="badge">${item.domain}</span> ${label}</td>
           <td>${rawScore}</td>
           <td>${avg}</td>
-          <td><span class="chip level ${level}">${levelText[level] || level}</span></td>
+          <td><span class="chip level ${level}">${levelLabels[level] || level}</span></td>
         </tr>
       `;
     })
     .join('');
 }
 
-function buildTraitSections(report, copy) {
+function buildTraitSections(report, copy, levelLabels, playbook, uiLanguage) {
   return report.generated
     .map((item) => {
       const score = report.scores[item.domain];
       const level = score?.result || 'neutral';
-      const levelLabel = levelText[level] || level;
-      const strategies = learningPlaybook[item.domain]?.[level] || [];
+      const levelLabel = levelLabels[level] || level;
+      const strategies = playbook[item.domain]?.[level] || [];
+      const names = getTraitNames(item.domain, uiLanguage);
+      const description = getResultText(item.domain, level, uiLanguage, item.scoreText || '');
       const facets =
         item.facets?.map(
           (facet) =>
@@ -65,12 +68,12 @@ function buildTraitSections(report, copy) {
         <article class="trait">
           <div class="trait-head">
             <div>
-              <h3 class="trait-title">${traitLabels[item.domain]?.zh || item.title}</h3>
-              <div class="meta">${traitLabels[item.domain]?.en || item.domain}</div>
+              <h3 class="trait-title">${names.main}</h3>
+              <div class="meta">${names.alt}</div>
             </div>
             <span class="chip level ${level}">${levelLabel}</span>
           </div>
-          <p class="lead">${item.scoreText || ''}</p>
+          <p class="lead">${description}</p>
           ${
             facets.length
               ? `<div class="meta">${copy?.pdfFacets || 'Facets'}</div><div class="facets">${facets.join(
@@ -92,17 +95,19 @@ function buildTraitSections(report, copy) {
     .join('');
 }
 
-export function exportReportPdf(report, copy) {
+export function exportReportPdf(report, copy, uiLanguage, playbook) {
   if (typeof window === 'undefined') return false;
   if (!report?.generated?.length) return false;
 
+  const levelLabels = getLevelText(uiLanguage);
+  const learning = playbook || getLearningPlaybook(uiLanguage);
   const timestamp = new Intl.DateTimeFormat(undefined, {
     dateStyle: 'medium',
     timeStyle: 'short'
   }).format(new Date());
 
-  const summaryRows = buildSummaryRows(report);
-  const traits = buildTraitSections(report, copy);
+  const summaryRows = buildSummaryRows(report, levelLabels, uiLanguage);
+  const traits = buildTraitSections(report, copy, levelLabels, learning, uiLanguage);
 
   const html = `
     <!doctype html>

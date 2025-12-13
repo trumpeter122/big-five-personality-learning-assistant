@@ -1,4 +1,4 @@
-export const studyCards = {
+const studyCardsZh = {
   E: {
     high: [
       '【社交动力卡】参加一个线上/线下学习小组，加速学习动力',
@@ -85,3 +85,100 @@ export const studyCards = {
     ]
   }
 };
+
+const studyCardsEn = {
+  E: {
+    high: [
+      '[Social Boost] Join an online/offline study group to fuel momentum.',
+      '[Energy Switch] Chat with someone for 1 minute before studying to get in the zone.',
+      '[Explain It] Say out loud what you learned today.'
+    ],
+    neutral: [
+      '[Balance] Study solo for 20 minutes, then do a 5-minute social recap.',
+      '[Light Share] Tell a friend one thing you learned today.',
+      '[Observe] Skim peers’ updates for motivation (no need to post).'
+    ],
+    low: [
+      '[Quiet Focus] Find a silent spot and study for 10 minutes.',
+      '[Calm Intake] Read or take notes instead of talking.',
+      '[Solo Task] Finish a small chunk entirely on your own—no social pressure.'
+    ]
+  },
+  A: {
+    high: [
+      '[Warm Start] Begin with a line of encouragement to yourself.',
+      '[Buddy Assist] Help someone understand a concept.',
+      '[Co-work] Pick a light task that needs a bit of interaction.'
+    ],
+    neutral: [
+      '[Comfort] Do a learning task you feel good about.',
+      '[Reflect] Note one small difficulty today and a one-line solution.',
+      '[Swap] Exchange a brief summary with one person (anonymous is fine).'
+    ],
+    low: [
+      '[Target] Finish a clear, small goal.',
+      '[Efficiency] Skip interaction and go straight to the task.',
+      '[Minimal Words] Summarize with as few words as possible.'
+    ]
+  },
+  C: {
+    high: [
+      '[Execute] Do the most important item on your plan.',
+      '[Organize] Make a list of what you learned today.',
+      '[Timer] Set a 20-minute focus timer.'
+    ],
+    neutral: [
+      '[Light Plan] Write 3 optional tasks; complete just one.',
+      '[Rhythm] Do a 10-minute short study sprint.',
+      '[Easy Start] Begin with the task you find easiest to start.'
+    ],
+    low: [
+      '[Curious Bite] Study anything interesting for 3 minutes.',
+      '[Free Pass] Finish one ultra-easy subtask and call it done.',
+      '[Play Mode] Treat a small knowledge task like a game.'
+    ]
+  },
+  N: {
+    high: [
+      '[Easy Win] Do a micro-task you feel zero stress about.',
+      '[Settle] Rest 1 minute, then begin.',
+      '[Decompress] Start from the simplest part—no perfection needed.'
+    ],
+    neutral: [
+      '[Steady Pace] Work 5 minutes, pause 1 minute.',
+      '[Just Right] Choose something not too hard, not too easy.',
+      '[Calm Breath] Take three deep breaths before starting.'
+    ],
+    low: [
+      '[Challenge] Pick a slightly harder task.',
+      '[Advance] Tackle the trickiest task early.',
+      '[Sustain] Try 15 minutes of uninterrupted study.'
+    ]
+  },
+  O: {
+    high: [
+      '[Explore] Try a new topic or tool.',
+      '[Creative Map] Turn today’s learning into a sketch/mind map.',
+      '[Switch Mode] Learn the same content in a totally new way.'
+    ],
+    neutral: [
+      '[Micro-Explore] Add a small twist to routine work (new spot, new order).',
+      '[Light Remix] Write one sentence in your own words about a new insight.',
+      '[Tiny New] Watch/read something new for under 3 minutes.'
+    ],
+    low: [
+      '[Reinforce] Review a foundation you already know.',
+      '[Structure] Follow a fixed sequence (A→B→C).',
+      '[Stay Consistent] Don’t change the method—just finish the set task.'
+    ]
+  }
+};
+
+export const studyCards = studyCardsZh;
+
+export function getStudyCards(uiLanguage) {
+  if (typeof uiLanguage === 'string' && uiLanguage.toLowerCase().startsWith('en')) {
+    return studyCardsEn;
+  }
+  return studyCardsZh;
+}

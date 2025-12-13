@@ -1,14 +1,14 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAssessment } from '../context/AssessmentContext';
-import { learningPlaybook, levelText, traitLabels } from '../assessment';
+import { getLearningPlaybook, getLevelText, getTraitNames, getResultText } from '../assessment';
 import { traitIcons, CloseIcon } from '../components/icons';
-import { studyCards } from '../data/cards';
+import { getStudyCards } from '../data/cards';
 import { useCopy } from '../hooks/useCopy';
 import { exportReportPdf } from '../utils/exportReport';
 
 function ResultsPage() {
-  const { report, resetAll } = useAssessment();
+  const { report, resetAll, uiLanguage } = useAssessment();
   const navigate = useNavigate();
   const c = useCopy();
 
@@ -48,22 +48,30 @@ function ResultsPage() {
     );
   }
 
+  const [drawn, setDrawn] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const playbook = useMemo(() => getLearningPlaybook(uiLanguage), [uiLanguage]);
+  const levelLabels = useMemo(() => getLevelText(uiLanguage), [uiLanguage]);
+  const cardsByLanguage = useMemo(() => getStudyCards(uiLanguage), [uiLanguage]);
+
   const deck = useMemo(() => {
     if (!report?.generated) return [];
     return report.generated.flatMap((item) => {
       const level = report.scores[item.domain]?.result || 'neutral';
-      const cards = studyCards[item.domain]?.[level] || [];
+      const cards = cardsByLanguage[item.domain]?.[level] || [];
       return cards.map((text) => ({
         domain: item.domain,
         level,
         text
       }));
     });
-  }, [report]);
+  }, [report, cardsByLanguage]);
 
-  const [drawn, setDrawn] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const [isExporting, setIsExporting] = useState(false);
+  useEffect(() => {
+    setDrawn(null);
+    setShowModal(false);
+  }, [uiLanguage]);
 
   const drawCard = () => {
     if (!deck.length) return;
@@ -75,7 +83,7 @@ function ResultsPage() {
   const handleExport = () => {
     if (!report) return;
     setIsExporting(true);
-    const ok = exportReportPdf(report, c);
+    const ok = exportReportPdf(report, c, uiLanguage, playbook);
     if (!ok) {
       window.alert?.(c.exportPdfError);
     }
@@ -89,7 +97,7 @@ function ResultsPage() {
           <p className="eyebrow">{c.resultsTitle}</p>
           <h2>{c.resultsSubtitle}</h2>
         </div>
-        <div className="pill accent">已生成</div>
+        <div className="pill accent">{c.reportReady}</div>
       </div>
 
       <div className="gacha">
@@ -107,13 +115,18 @@ function ResultsPage() {
           {drawn ? (
             <div className="gacha-card">
               <div className="gacha-meta">
-                <div className="pill muted" title={traitLabels[drawn.domain].zh}>
-                  {traitIcons[drawn.domain] && (() => {
-                    const Icon = traitIcons[drawn.domain];
-                    return <Icon />;
-                  })()}
-                </div>
-                <span className={`level ${drawn.level}`}>{levelText[drawn.level]}</span>
+                {(() => {
+                  const names = getTraitNames(drawn.domain, uiLanguage);
+                  return (
+                    <div className="pill muted" title={names.alt}>
+                      {traitIcons[drawn.domain] && (() => {
+                        const Icon = traitIcons[drawn.domain];
+                        return <Icon />;
+                      })()}
+                    </div>
+                  );
+                })()}
+                <span className={`level ${drawn.level}`}>{levelLabels[drawn.level]}</span>
               </div>
               <p className="gacha-text">{drawn.text}</p>
             </div>
@@ -128,17 +141,29 @@ function ResultsPage() {
           <div className="modal-card" onClick={(e) => e.stopPropagation()}>
             <div className="card-face">
               <div className="card-top">
-                <div className="card-emblem" title={traitLabels[drawn.domain].zh}>
-                  {traitIcons[drawn.domain] && (() => {
-                    const Icon = traitIcons[drawn.domain];
-                    return <Icon />;
-                  })()}
-                </div>
+                {(() => {
+                  const names = getTraitNames(drawn.domain, uiLanguage);
+                  return (
+                    <div className="card-emblem" title={names.alt}>
+                      {traitIcons[drawn.domain] && (() => {
+                        const Icon = traitIcons[drawn.domain];
+                        return <Icon />;
+                      })()}
+                    </div>
+                  );
+                })()}
                 <div className="card-meta">
-                  <p className="card-title">{traitLabels[drawn.domain].zh}</p>
-                  <p className="card-sub">
-                    {traitLabels[drawn.domain].en} · {levelText[drawn.level]}
-                  </p>
+                  {(() => {
+                    const names = getTraitNames(drawn.domain, uiLanguage);
+                    return (
+                      <>
+                        <p className="card-title">{names.main}</p>
+                        <p className="card-sub">
+                          {names.alt} · {levelLabels[drawn.level]}
+                        </p>
+                      </>
+                    );
+                  })()}
                 </div>
                 <button className="ghost icon-btn" onClick={() => setShowModal(false)}>
                   <CloseIcon />
@@ -150,13 +175,18 @@ function ResultsPage() {
                 <p className="hint">{c.gachaHint}</p>
               </div>
               <div className="card-bottom">
-                <span className={`level ${drawn.level}`}>{levelText[drawn.level]}</span>
-                <div className="pill muted" title={traitLabels[drawn.domain].zh}>
-                  {traitIcons[drawn.domain] && (() => {
-                    const Icon = traitIcons[drawn.domain];
-                    return <Icon />;
-                  })()}
-                </div>
+                <span className={`level ${drawn.level}`}>{levelLabels[drawn.level]}</span>
+                {(() => {
+                  const names = getTraitNames(drawn.domain, uiLanguage);
+                  return (
+                    <div className="pill muted" title={names.alt}>
+                      {traitIcons[drawn.domain] && (() => {
+                        const Icon = traitIcons[drawn.domain];
+                        return <Icon />;
+                      })()}
+                    </div>
+                  );
+                })()}
               </div>
             </div>
           </div>
@@ -166,23 +196,25 @@ function ResultsPage() {
       <div className="result-grid">
         {report.generated.map((item) => {
           const level = report.scores[item.domain]?.result || 'neutral';
-          const strategies = learningPlaybook[item.domain]?.[level] || [];
+          const strategies = playbook[item.domain]?.[level] || [];
           const Icon = traitIcons[item.domain];
+          const names = getTraitNames(item.domain, uiLanguage);
+          const scoreText = getResultText(item.domain, level, uiLanguage, item.scoreText || '');
 
           return (
             <div key={item.domain} className="result-card">
               <div className="result-head">
                 <div
                   className="pill muted"
-                  title={traitLabels[item.domain].zh}
-                  aria-label={traitLabels[item.domain].zh}
+                  title={names.alt}
+                  aria-label={names.alt}
                 >
                   {Icon && <Icon />}
                 </div>
-                <div className={`level ${level}`}>{levelText[level]}</div>
+                <div className={`level ${level}`}>{levelLabels[level]}</div>
               </div>
-              <p className="result-title">{item.title}</p>
-              <p className="result-text" dangerouslySetInnerHTML={{ __html: item.scoreText || '' }} />
+              <p className="result-title">{names.main}</p>
+              <p className="result-text" dangerouslySetInnerHTML={{ __html: scoreText }} />
               {item.facets?.length > 0 && (
                 <div className="facets">
                   {item.facets.slice(0, 2).map((facet) => (
