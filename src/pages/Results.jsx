@@ -4,22 +4,24 @@ import { useAssessment } from '../context/AssessmentContext';
 import { learningPlaybook, levelText, traitLabels } from '../assessment';
 import { traitIcons, CloseIcon } from '../components/icons';
 import { studyCards } from '../data/cards';
+import { useCopy } from '../hooks/useCopy';
 
 function ResultsPage() {
   const { report, resetAll } = useAssessment();
   const navigate = useNavigate();
+  const c = useCopy();
 
   if (!report) {
     return (
       <section className="card panel">
         <div className="panel-header">
           <div>
-            <p className="eyebrow">学习策略与人格反馈</p>
-            <h2>等待生成报告</h2>
+            <p className="eyebrow">{c.resultsTitle}</p>
+            <h2>{c.resultsSubtitle}</h2>
           </div>
         </div>
         <div className="placeholder">
-          <p>先完成 120 题测试，或在「直接输入」录入你的 Big Five 分数。</p>
+          <p>{c.noReport}</p>
           <div className="panel-cta" style={{ marginTop: '10px' }}>
             <button
               className="primary"
@@ -28,7 +30,7 @@ function ResultsPage() {
                 navigate('/test');
               }}
             >
-              前往严谨测试
+              {c.goTest}
             </button>
             <button
               className="ghost"
@@ -37,7 +39,7 @@ function ResultsPage() {
                 navigate('/manual');
               }}
             >
-              我已知分数
+              {c.goManual}
             </button>
           </div>
         </div>
@@ -72,8 +74,8 @@ function ResultsPage() {
     <section className="card panel">
       <div className="panel-header">
         <div>
-          <p className="eyebrow">学习策略与人格反馈</p>
-          <h2>个性化建议</h2>
+          <p className="eyebrow">{c.resultsTitle}</p>
+          <h2>{c.resultsSubtitle}</h2>
         </div>
         <div className="pill accent">已生成</div>
       </div>
@@ -81,12 +83,12 @@ function ResultsPage() {
       <div className="gacha">
         <div className="gacha-head">
           <div>
-            <p className="eyebrow">抽卡系统</p>
-            <h3>随机学习行动卡</h3>
-            <p className="hint">根据你的人格结果随机抽取一张任务卡，增加趣味和执行力。</p>
+            <p className="eyebrow">{c.gachaTitle}</p>
+            <h3>{c.gachaSubtitle}</h3>
+            <p className="hint">{c.gachaHint}</p>
           </div>
           <button className="primary" onClick={drawCard} disabled={!deck.length}>
-            抽一张
+            {c.draw}
           </button>
         </div>
         <div className="gacha-body">
@@ -104,7 +106,7 @@ function ResultsPage() {
               <p className="gacha-text">{drawn.text}</p>
             </div>
           ) : (
-            <p className="hint">点击「抽一张」从你的专属卡组抽取行动建议。</p>
+            <p className="hint">{c.gachaEmpty}</p>
           )}
         </div>
       </div>
@@ -131,9 +133,9 @@ function ResultsPage() {
                 </button>
               </div>
               <div className="modal-body">
-                <p className="label">今日抽卡任务</p>
+                <p className="label">{c.gachaToday}</p>
                 <p className="modal-text">{drawn.text}</p>
-                <p className="hint">再次点击「抽一张」可获得不同的行动卡。</p>
+                <p className="hint">{c.gachaHint}</p>
               </div>
               <div className="card-bottom">
                 <span className={`level ${drawn.level}`}>{levelText[drawn.level]}</span>
@@ -179,7 +181,7 @@ function ResultsPage() {
                 </div>
               )}
               <div className="strategy">
-                <p className="label">学习策略</p>
+                <p className="label">{c.strategyLabel}</p>
                 <ul>
                   {strategies.map((tip) => (
                     <li key={tip}>{tip}</li>
@@ -199,7 +201,7 @@ function ResultsPage() {
             navigate('/test');
           }}
         >
-          重新测试
+          {c.retest}
         </button>
         <button
           className="ghost"
@@ -208,7 +210,7 @@ function ResultsPage() {
             navigate('/manual');
           }}
         >
-          录入新的自评
+          {c.reinput}
         </button>
       </div>
     </section>

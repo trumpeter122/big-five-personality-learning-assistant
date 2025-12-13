@@ -85,7 +85,8 @@ returns an [array with questions and choices](examples/items-en.json)
 | ur   | Urdru     | Engr. Ahmad Khan |
 | pt-br| Portuguese (Brazil) | Grazziano Duarte |
 | ru   | Russian   | [Javid Askerov](https://github.com/askeroff), [Olga V](https://github.com/berrybell) |
-| zh-cn| Simplified Chinese | [Roy Jia](https://github.com/RoyJia) |
+| zh-cn| Chinese (Simplified) | [Roy Jia](https://github.com/RoyJia) |
+| zh-hk| Chinese (Traditional) |  |
 | th   | Thai      | [Maneepailin Sriuthenchai](https://github.com/linsuri) |
 | fi   | Finnish   | [Anastasia Tapper](https://github.com/ankkukku) |
 | id   | Indonesian| [David Adi Nugroho](https://github.com/lakuapik) |

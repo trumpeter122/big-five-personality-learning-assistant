@@ -104,6 +104,7 @@ export const levelText = {
 };
 
 export const languageOptions = languages;
+export const questionLanguages = Object.keys(questionBank);
 
 export function buildQuestions(language) {
   const questions = questionBank[language] || questionBank['en'];

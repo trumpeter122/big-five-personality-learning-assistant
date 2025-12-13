@@ -1,43 +1,60 @@
 import { NavLink } from 'react-router-dom';
 import { useAssessment } from '../context/AssessmentContext';
 import { ThemeIcon } from './icons';
+import { useCopy } from '../hooks/useCopy';
+import { copy } from '../i18n/copy';
 
 function Header() {
-  const { theme, setTheme } = useAssessment();
+  const { theme, setTheme, uiLanguage, setUiLanguage } = useAssessment();
+  const c = useCopy();
+  const uiOptions = Object.entries(copy).map(([code, value]) => ({
+    code,
+    label: value.uiName || code
+  }));
 
   return (
     <header className="app-header">
       <div className="header-left">
-        <p className="eyebrow">人格学习助手</p>
+        <p className="eyebrow">{c.badge}</p>
         <div className="brand-row">
-          <h1>「人格适配」学习策略引擎</h1>
+          <h1>{c.title}</h1>
           <div className="pill accent">蓝白 · Mediterranean</div>
         </div>
-        <p className="subtitle">
-          基于 Big Five（120 题）与学习风格适配理论，生成与你气质吻合的学习路线与复习仪式。
-        </p>
+        <p className="subtitle">{c.subtitle}</p>
         <nav className="nav-links">
           <NavLink to="/" end className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>
-            主页
+            {c.navHome}
           </NavLink>
           <NavLink to="/test" className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>
-            严谨测试
+            {c.navTest}
           </NavLink>
           <NavLink
             to="/manual"
             className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
           >
-            直接输入
+            {c.navManual}
           </NavLink>
           <NavLink
             to="/results"
             className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
           >
-            策略结果
+            {c.navResults}
           </NavLink>
         </nav>
       </div>
       <div className="header-actions">
+        <select
+          className="ghost select"
+          value={uiLanguage}
+          onChange={(e) => setUiLanguage(e.target.value)}
+          aria-label={c.uiLangLabel}
+        >
+          {uiOptions.map((opt) => (
+            <option key={opt.code} value={opt.code}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
         <button className="ghost icon-btn" onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
           <ThemeIcon mode={theme} />
         </button>

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAssessment } from '../context/AssessmentContext';
 import { traitLabels, languageOptions } from '../assessment';
 import { traitIcons } from '../components/icons';
+import { useCopy } from '../hooks/useCopy';
 
 function TestPage() {
   const {
@@ -21,6 +22,7 @@ function TestPage() {
     setLanguage
   } = useAssessment();
   const navigate = useNavigate();
+  const c = useCopy();
 
   const canSubmit = answeredCount === questions.length;
 
@@ -42,19 +44,19 @@ function TestPage() {
     <section className="card panel">
       <div className="panel-header">
         <div>
-          <p className="eyebrow">人格测试</p>
-          <h2>Big Five 120 题问卷</h2>
-          <p className="hint">每屏 8 题，可随时返回修改。下方语言仅切换题干与选项（界面多语言将另行提供）。</p>
+          <p className="eyebrow">{c.navTest}</p>
+          <h2>{c.testTitle}</h2>
+          <p className="hint">{c.testHint}</p>
         </div>
         <div className="progress">
           <span>
-            完成 {answeredCount}/{questions.length}（Q{questionMeta.rangeStart} - Q{questionMeta.rangeEnd}）
+            {answeredCount}/{questions.length}（Q{questionMeta.rangeStart} - Q{questionMeta.rangeEnd}）
           </span>
           <div className="progress-bar">
             <div style={{ width: `${progress}%` }} />
           </div>
           <div className="language-switch">
-            <label className="hint" htmlFor="question-language">题目语言</label>
+            <label className="hint" htmlFor="question-language">{c.questionLangLabel}</label>
             <select
               id="question-language"
               className="ghost select"
@@ -108,14 +110,14 @@ function TestPage() {
       <div className="panel-actions">
         <div className="nav">
           <button className="ghost" disabled={page === 0} onClick={() => setPage(page - 1)}>
-            上一组
+            {c.prev}
           </button>
           <button
             className="ghost"
             disabled={page + 1 >= totalPages}
             onClick={() => setPage(page + 1)}
           >
-            下一组
+            {c.next}
           </button>
         </div>
         <div className="panel-cta">
@@ -126,10 +128,10 @@ function TestPage() {
               navigate('/manual');
             }}
           >
-            我已知人格，直接输入
+            {c.startManual}
           </button>
           <button className="primary" disabled={!canSubmit} onClick={handleSubmit}>
-            生成报告
+            {c.submit}
           </button>
         </div>
       </div>

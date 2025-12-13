@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { processAnswers } from '../../docs/packages/score/src/index.ts';
-import { buildQuestions, mapScoresToResults } from '../assessment';
+import { buildQuestions, mapScoresToResults, questionLanguages, languageOptions } from '../assessment';
 
 const AssessmentContext = createContext(null);
 
@@ -10,7 +10,12 @@ export function useAssessment() {
 
 export function AssessmentProvider({ children }) {
   const [theme, setTheme] = useState('light');
-  const [language, setLanguage] = useState('zh-cn');
+  const [uiLanguage, setUiLanguage] = useState('zh');
+  const defaultQuestionLanguage = questionLanguages.includes('zh-cn')
+    ? 'zh-cn'
+    : questionLanguages[0] || 'en';
+  const [language, setLanguage] = useState(defaultQuestionLanguage);
+  const [lastAutoLang, setLastAutoLang] = useState(defaultQuestionLanguage);
   const [page, setPage] = useState(0);
   const [answers, setAnswers] = useState({});
   const [manualScores, setManualScores] = useState({ O: 3, C: 3, E: 3, A: 3, N: 3 });
@@ -24,6 +29,23 @@ export function AssessmentProvider({ children }) {
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
+
+  const findQuestionLangForUi = (uiCode) => {
+    if (!uiCode) return null;
+    if (questionLanguages.includes(uiCode)) return uiCode;
+    const found = languageOptions.find((lang) => lang.code.toLowerCase().startsWith(uiCode.toLowerCase()));
+    return found?.code || null;
+  };
+
+  useEffect(() => {
+    const target = findQuestionLangForUi(uiLanguage);
+    if (target) {
+      if (language === lastAutoLang) {
+        setLanguage(target);
+      }
+      setLastAutoLang(target);
+    }
+  }, [uiLanguage, language, lastAutoLang]);
 
   useEffect(() => {
     setAnswers({});
@@ -74,6 +96,8 @@ export function AssessmentProvider({ children }) {
   const value = {
     theme,
     setTheme,
+    uiLanguage,
+    setUiLanguage,
     language,
     setLanguage,
     questions,

@@ -38,8 +38,8 @@ export type LanguageCode =
 
 const languages: Language[] = [
   { code: "en", name: "English" },
-  { code: "zh-cn", name: "Chinese (PRC)" },
-  { code: "zh-hk", name: "Chinese (Hong Kong)" },
+  { code: "zh-cn", name: "Chinese (Simplified)" },
+  { code: "zh-hk", name: "Chinese (Traditional)" },
   { code: "hi", name: "Hindi" },
   { code: "es", name: "Spanish" },
   { code: "fr", name: "French" },

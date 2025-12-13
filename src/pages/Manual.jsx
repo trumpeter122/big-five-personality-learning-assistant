@@ -2,9 +2,11 @@ import { useNavigate } from 'react-router-dom';
 import { useAssessment } from '../context/AssessmentContext';
 import { traitLabels } from '../assessment';
 import { traitIcons } from '../components/icons';
+import { useCopy } from '../hooks/useCopy';
 
 function ManualPage() {
   const { manualScores, setManualScores, submitManual, resetAll } = useAssessment();
+  const c = useCopy();
   const navigate = useNavigate();
 
   const handleSubmit = () => {
@@ -16,9 +18,9 @@ function ManualPage() {
     <section className="card panel">
       <div className="panel-header">
         <div>
-          <p className="eyebrow">直接输入 Big Five</p>
-          <h2>已知人格轮廓 → 生成策略</h2>
-          <p className="hint">按 1~5 自评或录入已有测评结果；可输入 0.5 步长。</p>
+          <p className="eyebrow">{c.navManual}</p>
+          <h2>{c.manualTitle}</h2>
+          <p className="hint">{c.manualHint}</p>
         </div>
       </div>
 
@@ -45,7 +47,7 @@ function ManualPage() {
               value={manualScores[key]}
               onChange={(e) => setManualScores((prev) => ({ ...prev, [key]: Number(e.target.value) }))}
             />
-            <p className="hint">1=低特质，5=高特质。保持与你熟悉的测评一致。</p>
+            <p className="hint">{c.manualHint}</p>
           </div>
         ))}
         <div className="manual-actions">
@@ -56,10 +58,10 @@ function ManualPage() {
               navigate('/test');
             }}
           >
-            回到严谨测试
+            {c.manualBack}
           </button>
           <button className="primary" onClick={handleSubmit}>
-            生成学习策略
+            {c.manualSubmit}
           </button>
         </div>
       </div>
