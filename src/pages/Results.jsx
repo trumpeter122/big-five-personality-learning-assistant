@@ -115,17 +115,6 @@ function ResultsPage() {
           {drawn ? (
             <div className="gacha-card">
               <div className="gacha-meta">
-                {(() => {
-                  const names = getTraitNames(drawn.domain, uiLanguage);
-                  return (
-                    <div className="pill muted" title={names.alt}>
-                      {traitIcons[drawn.domain] && (() => {
-                        const Icon = traitIcons[drawn.domain];
-                        return <Icon />;
-                      })()}
-                    </div>
-                  );
-                })()}
                 <span className={`level ${drawn.level}`}>{levelLabels[drawn.level]}</span>
               </div>
               <p className="gacha-text">{drawn.text}</p>
@@ -144,7 +133,7 @@ function ResultsPage() {
                 {(() => {
                   const names = getTraitNames(drawn.domain, uiLanguage);
                   return (
-                    <div className="card-emblem" title={names.alt}>
+                    <div className="card-emblem" title={names.main}>
                       {traitIcons[drawn.domain] && (() => {
                         const Icon = traitIcons[drawn.domain];
                         return <Icon />;
@@ -158,9 +147,7 @@ function ResultsPage() {
                     return (
                       <>
                         <p className="card-title">{names.main}</p>
-                        <p className="card-sub">
-                          {names.alt} · {levelLabels[drawn.level]}
-                        </p>
+                        <p className="card-sub">{levelLabels[drawn.level]}</p>
                       </>
                     );
                   })()}
@@ -173,20 +160,6 @@ function ResultsPage() {
                 <p className="label">{c.gachaToday}</p>
                 <p className="modal-text">{drawn.text}</p>
                 <p className="hint">{c.gachaHint}</p>
-              </div>
-              <div className="card-bottom">
-                <span className={`level ${drawn.level}`}>{levelLabels[drawn.level]}</span>
-                {(() => {
-                  const names = getTraitNames(drawn.domain, uiLanguage);
-                  return (
-                    <div className="pill muted" title={names.alt}>
-                      {traitIcons[drawn.domain] && (() => {
-                        const Icon = traitIcons[drawn.domain];
-                        return <Icon />;
-                      })()}
-                    </div>
-                  );
-                })()}
               </div>
             </div>
           </div>
