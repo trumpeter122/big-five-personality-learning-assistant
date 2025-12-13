@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAssessment } from '../context/AssessmentContext';
 import {
@@ -6,7 +6,8 @@ import {
   getLevelText,
   getTraitNames,
   getResultText,
-  mapScoresToResults
+  mapScoresToResults,
+  traitTones
 } from '../assessment';
 import { traitIcons, CloseIcon } from '../components/icons';
 import { getStudyCards } from '../data/cards';
@@ -71,9 +72,74 @@ function ResultsPage() {
   const [drawn, setDrawn] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [tone, setTone] = useState(null);
+  const [ripple, setRipple] = useState(null);
+  const rippleTimeoutRef = useRef(null);
+  const defaultVarsRef = useRef(null);
   const playbook = useMemo(() => getLearningPlaybook(uiLanguage), [uiLanguage]);
   const levelLabels = useMemo(() => getLevelText(uiLanguage), [uiLanguage]);
   const cardsByLanguage = useMemo(() => getStudyCards(uiLanguage), [uiLanguage]);
+
+  const captureDefaultVars = () => {
+    if (defaultVarsRef.current) return;
+    const styles = getComputedStyle(document.documentElement);
+    defaultVarsRef.current = {
+      accent: styles.getPropertyValue('--accent'),
+      accent2: styles.getPropertyValue('--accent-2'),
+      pill: styles.getPropertyValue('--pill')
+    };
+  };
+
+  const applyTone = (domain, evt) => {
+    const theme = traitTones[domain];
+    if (!theme) return;
+    captureDefaultVars();
+    if (rippleTimeoutRef.current) {
+      clearTimeout(rippleTimeoutRef.current);
+      rippleTimeoutRef.current = null;
+    }
+    document.documentElement.style.setProperty('--accent', theme.accent);
+    document.documentElement.style.setProperty('--accent-2', theme.accent2);
+    document.documentElement.style.setProperty('--pill', theme.pill);
+    setTone(domain);
+    if (evt) {
+      const margin = 80;
+      const vw = window.innerWidth || 1200;
+      const vh = window.innerHeight || 800;
+      let x = evt.clientX;
+      let y = evt.clientY;
+      const pushToEdge = (value, size) => {
+        if (value < size / 2) return margin;
+        if (value > size / 2) return size - margin;
+        return value;
+      };
+      x = pushToEdge(x, vw);
+      y = pushToEdge(y, vh);
+      setRipple({
+        x,
+        y,
+        color: theme.accent,
+        active: true
+      });
+    }
+  };
+
+  const clearTone = () => {
+    if (defaultVarsRef.current) {
+      document.documentElement.style.setProperty('--accent', defaultVarsRef.current.accent);
+      document.documentElement.style.setProperty('--accent-2', defaultVarsRef.current.accent2);
+      document.documentElement.style.setProperty('--pill', defaultVarsRef.current.pill);
+    }
+    setTone(null);
+    setRipple((prev) => (prev ? { ...prev, active: false } : null));
+    if (rippleTimeoutRef.current) {
+      clearTimeout(rippleTimeoutRef.current);
+    }
+    rippleTimeoutRef.current = setTimeout(() => {
+      setRipple(null);
+      rippleTimeoutRef.current = null;
+    }, 420);
+  };
 
   useEffect(() => {
     if (report) return;
@@ -93,6 +159,16 @@ function ResultsPage() {
       navigate({ pathname: '/results', search: `?${nextSearch}` }, { replace: true });
     }
   }, [report, location.search, navigate]);
+
+  useEffect(
+    () => () => {
+      clearTone();
+      if (rippleTimeoutRef.current) {
+        clearTimeout(rippleTimeoutRef.current);
+      }
+    },
+    []
+  );
 
   const hasReport = !!report;
 
@@ -270,7 +346,12 @@ function ResultsPage() {
           const scoreText = getResultText(item.domain, level, uiLanguage, item.scoreText || '');
 
           return (
-            <div key={item.domain} className="result-card">
+            <div
+              key={item.domain}
+              className="result-card"
+              onMouseEnter={(e) => applyTone(item.domain, e)}
+              onMouseLeave={clearTone}
+            >
               <div className="result-head">
                 <div
                   className="pill muted"
@@ -336,6 +417,16 @@ function ResultsPage() {
           </button>
         </div>
       </div>
+      {ripple && (
+        <div
+          className={`tone-overlay${tone ? ' active' : ''}`}
+          style={{
+            '--tone-x': `${ripple.x}px`,
+            '--tone-y': `${ripple.y}px`,
+            '--tone-color': ripple.color
+          }}
+        />
+      )}
       {toast && <div className="toast">{toast}</div>}
     </section>
   );

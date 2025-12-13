@@ -740,6 +740,36 @@ input[type='range'] {
   animation: pop-in 200ms ease;
 }
 
+.tone-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: visible;
+  opacity: 0;
+  transition: opacity 360ms ease, transform 480ms ease;
+  mix-blend-mode: screen;
+  z-index: 9;
+}
+
+.tone-overlay.active {
+  opacity: 0.6;
+  transform: scale(1.03);
+}
+
+.tone-overlay::before {
+  content: '';
+  position: absolute;
+  width: 140vmax;
+  height: 140vmax;
+  left: calc(var(--tone-x) - 70vmax);
+  top: calc(var(--tone-y) - 70vmax);
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--tone-color, transparent) 0%, transparent 65%);
+  filter: blur(16px);
+  opacity: 0.9;
+  transition: opacity 360ms ease, transform 480ms ease;
+}
+
 @media (max-width: 900px) {
   .grid,
   .hero,

@@ -182,6 +182,14 @@ const levelTextEn = {
   low: 'Low'
 };
 
+export const traitTones = {
+  O: { accent: '#1f7a8c', accent2: '#f0b673', pill: 'rgba(31, 122, 140, 0.16)' },
+  C: { accent: '#1e6ea4', accent2: '#c8a15c', pill: 'rgba(30, 110, 164, 0.16)' },
+  E: { accent: '#c44569', accent2: '#f4c27a', pill: 'rgba(196, 69, 105, 0.16)' },
+  A: { accent: '#1b998b', accent2: '#f0b673', pill: 'rgba(27, 153, 139, 0.16)' },
+  N: { accent: '#9c5dd9', accent2: '#f0b673', pill: 'rgba(156, 93, 217, 0.16)' }
+};
+
 const resultTextZh = {
   O: {
     high: '你的开放性偏高，喜欢新鲜、多样和变化，富有好奇心和想象力。',
