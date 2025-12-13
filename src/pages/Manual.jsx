@@ -1,13 +1,14 @@
 import { useNavigate } from 'react-router-dom';
 import { useAssessment } from '../context/AssessmentContext';
-import { traitLabels } from '../assessment';
+import { getTraitLabels } from '../assessment';
 import { traitIcons } from '../components/icons';
 import { useCopy } from '../hooks/useCopy';
 
 function ManualPage() {
-  const { manualScores, setManualScores, submitManual, resetAll } = useAssessment();
+  const { manualScores, setManualScores, submitManual, resetAll, uiLanguage } = useAssessment();
   const c = useCopy();
   const navigate = useNavigate();
+  const traitLabels = getTraitLabels(uiLanguage);
 
   const handleSubmit = () => {
     submitManual();
@@ -28,7 +29,7 @@ function ManualPage() {
         {Object.entries(traitLabels).map(([key, meta]) => (
           <div key={key} className="manual-card">
             <div className="manual-head">
-              <div className="pill muted" title={meta.zh} aria-label={meta.zh}>
+              <div className="pill muted" title={meta.name} aria-label={meta.name}>
                 {traitIcons[key] && (() => {
                   const Icon = traitIcons[key];
                   return <Icon />;
@@ -36,9 +37,7 @@ function ManualPage() {
               </div>
               <span className="score">{manualScores[key]}</span>
             </div>
-            <p className="tone">
-              {meta.en} · {meta.tone}
-            </p>
+            <p className="tone">{meta.name} · {meta.tone}</p>
             <input
               type="range"
               min="1"

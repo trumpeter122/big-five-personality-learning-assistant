@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAssessment } from '../context/AssessmentContext';
-import { traitLabels, languageOptions } from '../assessment';
+import { getTraitLabels, languageOptions } from '../assessment';
 import { traitIcons } from '../components/icons';
 import { useCopy } from '../hooks/useCopy';
 
@@ -19,12 +19,14 @@ function TestPage() {
     submitTest,
     resetAll,
     language,
-    setLanguage
+    setLanguage,
+    uiLanguage
   } = useAssessment();
   const navigate = useNavigate();
   const c = useCopy();
 
   const canSubmit = answeredCount === questions.length;
+  const traitLabels = getTraitLabels(uiLanguage);
 
   const handleSubmit = () => {
     if (submitTest()) {
@@ -82,7 +84,7 @@ function TestPage() {
             <div key={question.id} className="question-card">
               <div className="question-meta">
                 <span className="pill muted">Q{question.num}</span>
-                <span className="pill muted" title={traitLabels[question.domain].zh} aria-label={traitLabels[question.domain].zh}>
+                <span className="pill muted" title={traitLabels[question.domain]?.name} aria-label={traitLabels[question.domain]?.name}>
                   {traitIcons[question.domain] && (() => {
                     const Icon = traitIcons[question.domain];
                     return <Icon />;
