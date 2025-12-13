@@ -1,59 +1,100 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAssessment } from '../context/AssessmentContext';
-import { getLearningPlaybook, getLevelText, getTraitNames, getResultText } from '../assessment';
+import {
+  getLearningPlaybook,
+  getLevelText,
+  getTraitNames,
+  getResultText,
+  mapScoresToResults
+} from '../assessment';
 import { traitIcons, CloseIcon } from '../components/icons';
 import { getStudyCards } from '../data/cards';
 import { useCopy } from '../hooks/useCopy';
 import { exportReportPdf } from '../utils/exportReport';
+import { processAnswers } from '../../docs/packages/score/src/index.ts';
+
+const domainParamMap = {
+  openness: 'O',
+  conscientiousness: 'C',
+  extraversion: 'E',
+  agreeableness: 'A',
+  neuroticism: 'N'
+};
+
+const reverseDomainParamMap = Object.fromEntries(
+  Object.entries(domainParamMap).map(([key, value]) => [value, key])
+);
+
+const buildReportFromScores = (scoreMap) => {
+  const entries = Object.entries(scoreMap)
+    .filter(([, val]) => !Number.isNaN(Number(val)))
+    .map(([domain, score]) => ({ domain, score: Number(score) }));
+  if (!entries.length) return null;
+  const scores = processAnswers(entries);
+  const generated = mapScoresToResults(scores);
+  return { scores, generated };
+};
+
+const parseQueryScores = (search) => {
+  const params = new URLSearchParams(search || '');
+  const result = {};
+  let hasAny = false;
+  Object.entries(domainParamMap).forEach(([param, domain]) => {
+    const raw = params.get(param);
+    if (raw == null) return;
+    const num = Number(raw);
+    if (Number.isNaN(num)) return;
+    result[domain] = num;
+    hasAny = true;
+  });
+  return hasAny ? result : null;
+};
+
+const buildShareSearch = (report) => {
+  const params = new URLSearchParams();
+  Object.entries(report.scores || {}).forEach(([domain, data]) => {
+    const param = reverseDomainParamMap[domain];
+    if (!param || !data) return;
+    const avg = data.count ? data.score / data.count : data.score;
+    params.set(param, (avg || 0).toFixed(2));
+  });
+  return params.toString();
+};
 
 function ResultsPage() {
-  const { report, resetAll, uiLanguage } = useAssessment();
+  const { report, resetAll, uiLanguage, setReport } = useAssessment();
   const navigate = useNavigate();
+  const location = useLocation();
   const c = useCopy();
-
-  if (!report) {
-    return (
-      <section className="card panel">
-        <div className="panel-header">
-          <div>
-            <p className="eyebrow">{c.resultsTitle}</p>
-            <h2>{c.resultsSubtitle}</h2>
-          </div>
-        </div>
-        <div className="placeholder">
-          <p>{c.noReport}</p>
-          <div className="panel-cta" style={{ marginTop: '10px' }}>
-            <button
-              className="primary"
-              onClick={() => {
-                resetAll();
-                navigate('/test');
-              }}
-            >
-              {c.goTest}
-            </button>
-            <button
-              className="ghost"
-              onClick={() => {
-                resetAll();
-                navigate('/manual');
-              }}
-            >
-              {c.goManual}
-            </button>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
+  const [toast, setToast] = useState(null);
   const [drawn, setDrawn] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const playbook = useMemo(() => getLearningPlaybook(uiLanguage), [uiLanguage]);
   const levelLabels = useMemo(() => getLevelText(uiLanguage), [uiLanguage]);
   const cardsByLanguage = useMemo(() => getStudyCards(uiLanguage), [uiLanguage]);
+
+  useEffect(() => {
+    if (report) return;
+    const parsed = parseQueryScores(location.search);
+    if (!parsed) return;
+    const next = buildReportFromScores(parsed);
+    if (next) {
+      setReport(next);
+    }
+  }, [report, location.search, setReport]);
+
+  useEffect(() => {
+    if (!report) return;
+    const nextSearch = buildShareSearch(report);
+    const currentSearch = (location.search || '').replace(/^\?/, '');
+    if (nextSearch && nextSearch !== currentSearch) {
+      navigate({ pathname: '/results', search: `?${nextSearch}` }, { replace: true });
+    }
+  }, [report, location.search, navigate]);
+
+  const hasReport = !!report;
 
   const deck = useMemo(() => {
     if (!report?.generated) return [];
@@ -89,6 +130,60 @@ function ResultsPage() {
     }
     setTimeout(() => setIsExporting(false), 400);
   };
+
+  const handleCopyLink = async () => {
+    if (!report) return;
+    const search = buildShareSearch(report);
+    const url = `${window.location.origin}/results${search ? `?${search}` : ''}`;
+    try {
+      if (navigator?.clipboard?.writeText) {
+        await navigator.clipboard.writeText(url);
+        setToast(c.shareCopied);
+      } else {
+        throw new Error('clipboard unavailable');
+      }
+    } catch (err) {
+      console.error(err);
+      setToast(c.shareCopyFailed);
+    }
+    setTimeout(() => setToast(null), 2000);
+  };
+
+  if (!hasReport) {
+    return (
+      <section className="card panel">
+        <div className="panel-header">
+          <div>
+            <p className="eyebrow">{c.resultsTitle}</p>
+            <h2>{c.resultsSubtitle}</h2>
+          </div>
+        </div>
+        <div className="placeholder">
+          <p>{c.noReport}</p>
+          <div className="panel-cta" style={{ marginTop: '10px' }}>
+            <button
+              className="primary"
+              onClick={() => {
+                resetAll();
+                navigate('/test');
+              }}
+            >
+              {c.goTest}
+            </button>
+            <button
+              className="ghost"
+              onClick={() => {
+                resetAll();
+                navigate('/manual');
+              }}
+            >
+              {c.goManual}
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="card panel">
@@ -215,6 +310,9 @@ function ResultsPage() {
           <button className="primary" onClick={handleExport} disabled={isExporting}>
             {isExporting ? c.exportingPdf : c.exportPdf}
           </button>
+          <button className="ghost" onClick={handleCopyLink}>
+            {c.shareLink}
+          </button>
           <p className="hint">{c.exportPdfHint}</p>
         </div>
         <div className="panel-cta">
@@ -238,6 +336,7 @@ function ResultsPage() {
           </button>
         </div>
       </div>
+      {toast && <div className="toast">{toast}</div>}
     </section>
   );
 }

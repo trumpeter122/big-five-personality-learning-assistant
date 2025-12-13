@@ -115,7 +115,8 @@ export function AssessmentProvider({ children }) {
     report,
     resetAll,
     answeredCount,
-    progress
+    progress,
+    setReport
   };
 
   return <AssessmentContext.Provider value={value}>{children}</AssessmentContext.Provider>;
