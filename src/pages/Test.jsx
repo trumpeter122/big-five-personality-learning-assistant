@@ -63,7 +63,6 @@ function TestPage() {
               value={language}
               onChange={(e) => {
                 setLanguage(e.target.value);
-                resetAll();
               }}
             >
               {languageOptions.map((lang) => (

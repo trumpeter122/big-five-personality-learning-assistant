@@ -48,10 +48,11 @@ export function AssessmentProvider({ children }) {
   }, [uiLanguage, language, lastAutoLang]);
 
   useEffect(() => {
-    setAnswers({});
-    setReport(null);
-    setPage(0);
-  }, [language]);
+    const maxPage = Math.max(0, Math.ceil(questions.length / 8) - 1);
+    if (page > maxPage) {
+      setPage(maxPage);
+    }
+  }, [language, page, questions.length]);
 
   const resetAll = () => {
     setAnswers({});
