@@ -1,7 +1,8 @@
 import { processAnswers } from '../../docs/packages/score/src/index.ts';
 import { mapScoresToResults } from '../assessment';
+import type { TraitKey, Report, Scores } from '../types';
 
-export const domainParamMap = {
+export const domainParamMap: Record<string, TraitKey> = {
   openness: 'O',
   conscientiousness: 'C',
   extraversion: 'E',
@@ -9,23 +10,23 @@ export const domainParamMap = {
   neuroticism: 'N'
 };
 
-const reverseDomainParamMap = Object.fromEntries(
+const reverseDomainParamMap: Record<string, string> = Object.fromEntries(
   Object.entries(domainParamMap).map(([key, value]) => [value, key])
 );
 
-export const buildReportFromScores = (scoreMap) => {
+export const buildReportFromScores = (scoreMap: Record<string, number>): Report | null => {
   const entries = Object.entries(scoreMap)
     .filter(([, val]) => !Number.isNaN(Number(val)))
     .map(([domain, score]) => ({ domain, score: Number(score) }));
   if (!entries.length) return null;
-  const scores = processAnswers(entries);
+  const scores = processAnswers(entries) as Scores;
   const generated = mapScoresToResults(scores);
   return { scores, generated };
 };
 
-export const parseQueryScores = (search) => {
+export const parseQueryScores = (search: string) => {
   const params = new URLSearchParams(search || '');
-  const result = {};
+  const result: Record<string, number> = {};
   let hasAny = false;
   Object.entries(domainParamMap).forEach(([param, domain]) => {
     const raw = params.get(param);
@@ -35,10 +36,10 @@ export const parseQueryScores = (search) => {
     result[domain] = num;
     hasAny = true;
   });
-  return hasAny ? result : null;
+  return hasAny ? (result as Record<TraitKey, number>) : null;
 };
 
-export const buildShareSearch = (report) => {
+export const buildShareSearch = (report: Report) => {
   const params = new URLSearchParams();
   Object.entries(report.scores || {}).forEach(([domain, data]) => {
     const param = reverseDomainParamMap[domain];

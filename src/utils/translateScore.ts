@@ -1,4 +1,4 @@
-const replacements = [
+const replacements: { en: string; zh: string }[] = [
   { en: 'Your score on Openness to Experience is high', zh: '你的开放性得分较高' },
   { en: 'Your score on Openness to Experience is low', zh: '你的开放性得分较低' },
   { en: 'Your score on Openness to Experience is average', zh: '你的开放性得分中等' },
@@ -16,7 +16,7 @@ const replacements = [
   { en: 'Your score on Neuroticism is average', zh: '你的神经质得分中等' }
 ];
 
-export function translateScoreText(text, lang) {
+export function translateScoreText(text: string, lang: string): string {
   if (lang === 'en') return text;
   let translated = text;
   replacements.forEach(({ en, zh }) => {

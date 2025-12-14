@@ -1,10 +1,21 @@
 import { useEffect, useRef, useState } from 'react';
+import type { TraitKey } from '../types';
 
-export function useToneRipple(traitTones) {
-  const [tone, setTone] = useState(null);
-  const [ripple, setRipple] = useState(null);
-  const defaultVarsRef = useRef(null);
-  const timeoutRef = useRef(null);
+type ToneTheme = { accent: string; accent2: string; pill: string };
+type ToneMap = Record<TraitKey, ToneTheme>;
+
+interface RippleState {
+  x: number;
+  y: number;
+  color: string;
+  active: boolean;
+}
+
+export function useToneRipple(traitTones: ToneMap) {
+  const [tone, setTone] = useState<TraitKey | null>(null);
+  const [ripple, setRipple] = useState<RippleState | null>(null);
+  const defaultVarsRef = useRef<ToneTheme | null>(null);
+  const timeoutRef = useRef<number | null>(null);
 
   const captureDefaultVars = () => {
     if (defaultVarsRef.current) return;
@@ -16,7 +27,7 @@ export function useToneRipple(traitTones) {
     };
   };
 
-  const applyTone = (domain, evt) => {
+  const applyTone = (domain: TraitKey, evt?: { clientX: number; clientY: number }) => {
     const theme = traitTones[domain];
     if (!theme) return;
     captureDefaultVars();
@@ -37,7 +48,7 @@ export function useToneRipple(traitTones) {
     const margin = 80;
     const vw = window.innerWidth || 1200;
     const vh = window.innerHeight || 800;
-    const pushToEdge = (value, size) => {
+    const pushToEdge = (value: number, size: number) => {
       if (value < size / 2) return margin;
       if (value > size / 2) return size - margin;
       return value;
@@ -64,7 +75,7 @@ export function useToneRipple(traitTones) {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
-    timeoutRef.current = setTimeout(() => {
+    timeoutRef.current = window.setTimeout(() => {
       setRipple(null);
       timeoutRef.current = null;
     }, 420);

@@ -1,23 +1,39 @@
 import templateEn from '../docs/packages/results/src/data/en';
 import languages from '../docs/packages/questions/src/data/languages';
 import { getLocaleContent } from './i18n/content';
+import type {
+  TraitKey,
+  Level,
+  QuestionItem,
+  Playbook,
+  TraitLabels,
+  DomainResult,
+  Scores,
+  LocaleBundle
+} from './types';
 
 const questionModules = import.meta.glob('../docs/packages/questions/src/data/*/questions.ts', { eager: true });
 const choiceModules = import.meta.glob('../docs/packages/questions/src/data/*/choices.ts', { eager: true });
 
-const questionBank = Object.entries(questionModules).reduce((acc, [path, mod]) => {
-  const code = path.split('/data/')[1].split('/')[0];
-  acc[code] = mod.default;
-  return acc;
-}, {});
+const questionBank: Record<string, QuestionItem[]> = Object.entries(questionModules).reduce(
+  (acc, [path, mod]) => {
+    const code = path.split('/data/')[1].split('/')[0];
+    acc[code] = (mod as { default: QuestionItem[] }).default;
+    return acc;
+  },
+  {} as Record<string, QuestionItem[]>
+);
 
-const choiceBank = Object.entries(choiceModules).reduce((acc, [path, mod]) => {
-  const code = path.split('/data/')[1].split('/')[0];
-  acc[code] = mod.default;
-  return acc;
-}, {});
+const choiceBank: Record<string, Record<string, { text: string; score: number }[]>> = Object.entries(choiceModules).reduce(
+  (acc, [path, mod]) => {
+    const code = path.split('/data/')[1].split('/')[0];
+    acc[code] = (mod as { default: Record<string, { text: string; score: number }[]> }).default;
+    return acc;
+  },
+  {} as Record<string, Record<string, { text: string; score: number }[]>>
+);
 
-const learningPlaybookEn = {
+const learningPlaybookEn: Playbook = {
   O: {
     high: [
       'Weave cross-disciplinary examples or analogies to keep material fresh; capture quick ideas in spare minutes and validate fast.',
@@ -90,19 +106,19 @@ const learningPlaybookEn = {
   }
 };
 
-export const levelText = {
+export const levelText: Record<Level, string> = {
   high: '偏高',
   neutral: '中等',
   low: '偏低'
 };
 
-const levelTextEn = {
+const levelTextEn: Record<Level, string> = {
   high: 'High',
   neutral: 'Mid',
   low: 'Low'
 };
 
-export const traitTones = {
+export const traitTones: Record<TraitKey, { accent: string; accent2: string; pill: string }> = {
   O: { accent: '#1f7a8c', accent2: '#f0b673', pill: 'rgba(31, 122, 140, 0.16)' },
   C: { accent: '#1e6ea4', accent2: '#c8a15c', pill: 'rgba(30, 110, 164, 0.16)' },
   E: { accent: '#c44569', accent2: '#f4c27a', pill: 'rgba(196, 69, 105, 0.16)' },
@@ -113,17 +129,17 @@ export const traitTones = {
 export const languageOptions = languages;
 export const questionLanguages = Object.keys(questionBank);
 
-export const isEnglish = (uiLanguage) =>
+export const isEnglish = (uiLanguage?: string) =>
   typeof uiLanguage === 'string' && uiLanguage.toLowerCase().startsWith('en');
 
-export function getLevelText(uiLanguage) {
+export function getLevelText(uiLanguage?: string): Record<Level, string> {
   if (isEnglish(uiLanguage)) {
     return levelTextEn;
   }
   return levelText;
 }
 
-export function buildQuestions(language) {
+export function buildQuestions(language: string): QuestionItem[] {
   const questions = questionBank[language] || questionBank['en'];
   const choices = choiceBank[language] || choiceBank['en'];
 
@@ -134,18 +150,18 @@ export function buildQuestions(language) {
   }));
 }
 
-export function mapScoresToResults(scores) {
+export function mapScoresToResults(scores: Scores): DomainResult[] {
   return Object.keys(scores)
     .map((key) => {
       const domainTemplate = templateEn.find((template) => template.domain === key);
       if (!domainTemplate) return null;
 
-      const { result, count, score } = scores[key];
+      const { result, count, score } = scores[key as TraitKey];
       const resultText = domainTemplate.results.find((item) => item.score === result)?.text;
 
       const facets = domainTemplate.facets
         .map((facet) => {
-          const facetScore = scores[key].facet?.[facet.facet];
+          const facetScore = scores[key as TraitKey].facet?.[facet.facet];
           if (!facetScore) return null;
           return {
             facet: facet.facet,
@@ -159,7 +175,7 @@ export function mapScoresToResults(scores) {
         .filter(Boolean);
 
       return {
-        domain: domainTemplate.domain,
+        domain: domainTemplate.domain as TraitKey,
         title: domainTemplate.title,
         shortDescription: domainTemplate.shortDescription,
         description: domainTemplate.description,
@@ -167,33 +183,33 @@ export function mapScoresToResults(scores) {
         count,
         score,
         facets
-      };
+      } satisfies DomainResult;
     })
-    .filter(Boolean);
+    .filter(Boolean) as DomainResult[];
 }
 
-export const getLocaleBundle = (uiLanguage) => getLocaleContent(uiLanguage);
+export const getLocaleBundle = (uiLanguage?: string): LocaleBundle => getLocaleContent(uiLanguage);
 
-export function getTraitLabels(uiLanguage) {
+export function getTraitLabels(uiLanguage?: string): TraitLabels {
   const bundle = getLocaleContent(uiLanguage);
-  return bundle.labels || {};
+  return (bundle.labels as TraitLabels) || ({} as TraitLabels);
 }
 
-export function getTraitNames(domain, uiLanguage) {
+export function getTraitNames(domain: TraitKey, uiLanguage?: string) {
   const bundle = getLocaleContent(uiLanguage);
-  const labels = bundle.labels?.[domain] || { name: domain, alt: domain };
+  const labels = (bundle.labels?.[domain] as { name?: string; alt?: string }) || { name: domain, alt: domain };
   return {
     main: labels.name || domain,
     alt: labels.alt || labels.name || domain
   };
 }
 
-export function getLearningPlaybook(uiLanguage) {
+export function getLearningPlaybook(uiLanguage?: string): Playbook {
   const bundle = getLocaleContent(uiLanguage);
-  return bundle.playbook || learningPlaybookEn;
+  return (bundle.playbook as Playbook) || learningPlaybookEn;
 }
 
-export function getResultText(domain, level, uiLanguage, fallback) {
+export function getResultText(domain: TraitKey, level: Level, uiLanguage?: string, fallback?: string) {
   const bundle = getLocaleContent(uiLanguage);
-  return bundle.resultText?.[domain]?.[level] || fallback;
+  return bundle.resultText?.[domain]?.[level] || fallback || '';
 }

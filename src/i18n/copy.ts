@@ -137,4 +137,6 @@ export const copy = {
     uiLangLabel: 'UI language',
     questionLangLabel: 'Question language'
   }
-};
+} as const;
+
+export type CopyBundle = (typeof copy)['en'];

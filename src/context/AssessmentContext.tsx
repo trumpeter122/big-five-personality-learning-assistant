@@ -1,27 +1,74 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+  type Dispatch,
+  type SetStateAction
+} from 'react';
 import { processAnswers } from '../../docs/packages/score/src/index.ts';
 import { buildQuestions, mapScoresToResults, questionLanguages, languageOptions } from '../assessment';
+import type { QuestionItem, TraitKey, Report, Scores } from '../types';
 
-const AssessmentContext = createContext(null);
+type AnswerMap = Record<string, { domain: TraitKey; facet?: number; score: number }>;
 
-export function useAssessment() {
-  return useContext(AssessmentContext);
+interface AssessmentContextValue {
+  theme: string;
+  setTheme: Dispatch<SetStateAction<string>>;
+  uiLanguage: string;
+  setUiLanguage: Dispatch<SetStateAction<string>>;
+  language: string;
+  setLanguage: Dispatch<SetStateAction<string>>;
+  questions: QuestionItem[];
+  currentQuestions: QuestionItem[];
+  totalPages: number;
+  page: number;
+  setPage: Dispatch<SetStateAction<number>>;
+  answers: AnswerMap;
+  selectAnswer: (_question: QuestionItem, _choice: { score: number }) => void;
+  manualScores: Record<TraitKey, number>;
+  setManualScores: Dispatch<SetStateAction<Record<TraitKey, number>>>;
+  submitTest: () => boolean;
+  submitManual: () => boolean;
+  report: Report | null;
+  setReport: Dispatch<SetStateAction<Report | null>>;
+  resetAll: () => void;
+  answeredCount: number;
+  progress: number;
 }
 
-export function AssessmentProvider({ children }) {
-  const [theme, setTheme] = useState('light');
-  const [uiLanguage, setUiLanguage] = useState('zh');
+const AssessmentContext = createContext<AssessmentContextValue | null>(null);
+
+export function useAssessment(): AssessmentContextValue {
+  const ctx = useContext(AssessmentContext);
+  if (!ctx) {
+    throw new Error('useAssessment must be used within an AssessmentProvider');
+  }
+  return ctx;
+}
+
+export function AssessmentProvider({ children }: { children: ReactNode }) {
+  const [theme, setTheme] = useState<string>('light');
+  const [uiLanguage, setUiLanguage] = useState<string>('zh');
   const defaultQuestionLanguage = questionLanguages.includes('zh-cn')
     ? 'zh-cn'
     : questionLanguages[0] || 'en';
-  const [language, setLanguage] = useState(defaultQuestionLanguage);
-  const [lastAutoLang, setLastAutoLang] = useState(defaultQuestionLanguage);
-  const [page, setPage] = useState(0);
-  const [answers, setAnswers] = useState({});
-  const [manualScores, setManualScores] = useState({ O: 3, C: 3, E: 3, A: 3, N: 3 });
-  const [report, setReport] = useState(null);
+  const [language, setLanguage] = useState<string>(defaultQuestionLanguage);
+  const [lastAutoLang, setLastAutoLang] = useState<string>(defaultQuestionLanguage);
+  const [page, setPage] = useState<number>(0);
+  const [answers, setAnswers] = useState<AnswerMap>({});
+  const [manualScores, setManualScores] = useState<Record<TraitKey, number>>({
+    O: 3,
+    C: 3,
+    E: 3,
+    A: 3,
+    N: 3
+  });
+  const [report, setReport] = useState<Report | null>(null);
 
-  const questions = useMemo(() => buildQuestions(language), [language]);
+  const questions = useMemo<QuestionItem[]>(() => buildQuestions(language), [language]);
   const totalPages = Math.ceil(questions.length / 8);
   const answeredCount = Object.keys(answers).length;
   const progress = Math.round((answeredCount / questions.length) * 100);
@@ -30,7 +77,7 @@ export function AssessmentProvider({ children }) {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
-  const findQuestionLangForUi = (uiCode) => {
+  const findQuestionLangForUi = (uiCode: string | null | undefined) => {
     if (!uiCode) return null;
     if (questionLanguages.includes(uiCode)) return uiCode;
     const found = languageOptions.find((lang) => lang.code.toLowerCase().startsWith(uiCode.toLowerCase()));
@@ -61,7 +108,7 @@ export function AssessmentProvider({ children }) {
     setManualScores({ O: 3, C: 3, E: 3, A: 3, N: 3 });
   };
 
-  const selectAnswer = (question, choice) => {
+  const selectAnswer = (question: QuestionItem, choice: { score: number }) => {
     setAnswers((prev) => ({
       ...prev,
       [question.id]: { domain: question.domain, facet: question.facet, score: choice.score }
@@ -71,7 +118,7 @@ export function AssessmentProvider({ children }) {
   const submitTest = () => {
     if (answeredCount !== questions.length) return false;
     const formatted = Object.entries(answers).map(([, value]) => value);
-    const scores = processAnswers(formatted);
+    const scores = processAnswers(formatted) as Scores;
     const generated = mapScoresToResults(scores);
     setReport({ scores, generated });
     return true;
@@ -82,7 +129,7 @@ export function AssessmentProvider({ children }) {
       domain,
       score: Number(score)
     }));
-    const scores = processAnswers(manual);
+    const scores = processAnswers(manual) as Scores;
     const generated = mapScoresToResults(scores);
     setReport({ scores, generated });
     return true;

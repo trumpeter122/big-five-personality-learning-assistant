@@ -1,7 +1,8 @@
-import * as en from './en';
-import * as zh from './zh';
+import en from './en';
+import zh from './zh';
+import type { LocaleBundle } from '../../types';
 
-const locales = {
+const locales: Record<string, LocaleBundle> = {
   en,
   zh
 };
@@ -15,7 +16,7 @@ const findLocale = (uiLanguage) => {
   return 'en';
 };
 
-export function getLocaleContent(uiLanguage) {
+export function getLocaleContent(uiLanguage?: string): LocaleBundle {
   const key = findLocale(uiLanguage);
   return locales[key] || locales.en;
 }

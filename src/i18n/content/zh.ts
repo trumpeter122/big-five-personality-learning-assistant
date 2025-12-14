@@ -1,4 +1,6 @@
-export const labels = {
+import type { TraitLabels, Playbook, CardsDeck, LocaleBundle } from '../../types';
+
+export const labels: TraitLabels = {
   O: { name: '开放性', alt: 'Openness', tone: '创意探索' },
   C: { name: '尽责性', alt: 'Conscientiousness', tone: '计划执行' },
   E: { name: '外向性', alt: 'Extraversion', tone: '社交驱动' },
@@ -6,7 +8,7 @@ export const labels = {
   N: { name: '神经质', alt: 'Neuroticism', tone: '情绪波动' }
 };
 
-export const playbook = {
+export const playbook: Playbook = {
   O: {
     high: [
       '穿插跨学科案例/类比，让课程保持新鲜感；用碎片时间记下灵感并快速验证。',
@@ -79,7 +81,7 @@ export const playbook = {
   }
 };
 
-export const cards = {
+export const cards: CardsDeck = {
   E: {
     high: [
       '【社交动力卡】参加一个线上/线下学习小组，加速学习动力',
@@ -167,7 +169,7 @@ export const cards = {
   }
 };
 
-export const resultText = {
+export const resultText: LocaleBundle['resultText'] = {
   O: {
     high: '你的开放性偏高，喜欢新鲜、多样和变化，富有好奇心和想象力。',
     neutral: '你的开放性中等，喜欢传统也愿意尝试新事物，思考方式平衡务实与创意。',
@@ -194,3 +196,12 @@ export const resultText = {
     low: '你的神经质偏低，情绪平稳，是高压或突发任务中的“压舱石”。'
   }
 };
+
+const bundle: LocaleBundle = {
+  labels,
+  playbook,
+  cards,
+  resultText
+};
+
+export default bundle;

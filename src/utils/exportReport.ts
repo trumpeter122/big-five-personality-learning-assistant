@@ -1,4 +1,6 @@
 import { getLearningPlaybook, getLevelText, getTraitNames, getResultText } from '../assessment';
+import type { Report, Playbook, Level } from '../types';
+import type { CopyBundle } from '../i18n/copy';
 
 const styles = `
   :root { color-scheme: light; }
@@ -28,11 +30,11 @@ const styles = `
   @media print { body { background: #fff; } .report { margin: 0; } }
 `;
 
-function buildSummaryRows(report, levelLabels, uiLanguage) {
+function buildSummaryRows(report: Report, levelLabels: Record<Level, string>, uiLanguage: string) {
   return report.generated
     .map((item) => {
       const score = report.scores[item.domain];
-      const level = score?.result || 'neutral';
+      const level = (score?.result || 'neutral') as Level;
       const rawScore = score?.score != null ? score.score.toFixed(0) : '-';
       const avg = score?.count ? (score.score / score.count).toFixed(2) : '-';
       const names = getTraitNames(item.domain, uiLanguage);
@@ -49,11 +51,17 @@ function buildSummaryRows(report, levelLabels, uiLanguage) {
     .join('');
 }
 
-function buildTraitSections(report, copy, levelLabels, playbook, uiLanguage) {
+function buildTraitSections(
+  report: Report,
+  copy: CopyBundle,
+  levelLabels: Record<Level, string>,
+  playbook: Playbook,
+  uiLanguage: string
+) {
   return report.generated
     .map((item) => {
       const score = report.scores[item.domain];
-      const level = score?.result || 'neutral';
+      const level = (score?.result || 'neutral') as Level;
       const levelLabel = levelLabels[level] || level;
       const strategies = playbook[item.domain]?.[level] || [];
       const names = getTraitNames(item.domain, uiLanguage);
@@ -95,7 +103,12 @@ function buildTraitSections(report, copy, levelLabels, playbook, uiLanguage) {
     .join('');
 }
 
-export function exportReportPdf(report, copy, uiLanguage, playbook) {
+export function exportReportPdf(
+  report: Report,
+  copy: CopyBundle,
+  uiLanguage: string,
+  playbook?: Playbook
+) {
   if (typeof window === 'undefined') return false;
   if (!report?.generated?.length) return false;
 

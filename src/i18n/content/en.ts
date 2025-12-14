@@ -1,4 +1,6 @@
-export const labels = {
+import type { TraitLabels, Playbook, CardsDeck, LocaleBundle } from '../../types';
+
+export const labels: TraitLabels = {
   O: { name: 'Openness', alt: '开放性', tone: 'Curious explorer' },
   C: { name: 'Conscientiousness', alt: '尽责性', tone: 'Planner & executor' },
   E: { name: 'Extraversion', alt: '外向性', tone: 'Social driver' },
@@ -6,7 +8,7 @@ export const labels = {
   N: { name: 'Neuroticism', alt: '神经质', tone: 'Emotional flux' }
 };
 
-export const playbook = {
+export const playbook: Playbook = {
   O: {
     high: [
       'Weave cross-disciplinary examples or analogies to keep material fresh; capture quick ideas in spare minutes and validate fast.',
@@ -79,7 +81,7 @@ export const playbook = {
   }
 };
 
-export const cards = {
+export const cards: CardsDeck = {
   E: {
     high: [
       '[Social Boost] Join an online/offline study group to fuel momentum.',
@@ -167,7 +169,7 @@ export const cards = {
   }
 };
 
-export const resultText = {
+export const resultText: LocaleBundle['resultText'] = {
   O: {
     high: 'Your Openness is high—you enjoy novelty, variety, and change.',
     neutral: 'Your Openness is mid—you like tradition and will try new things when they fit.',
@@ -194,3 +196,12 @@ export const resultText = {
     low: 'Your Neuroticism is low—steady under pressure; a stabilizer for teams.'
   }
 };
+
+const bundle: LocaleBundle = {
+  labels,
+  playbook,
+  cards,
+  resultText
+};
+
+export default bundle;

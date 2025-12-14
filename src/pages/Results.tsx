@@ -14,21 +14,24 @@ import { useCopy } from '../hooks/useCopy';
 import { exportReportPdf } from '../utils/exportReport';
 import { useToneRipple } from '../hooks/useToneRipple';
 import { buildReportFromScores, parseQueryScores, buildShareSearch } from '../utils/reportShare';
+import type { TraitKey, Level, Report, CardsDeck } from '../types';
+
+type DeckCard = { domain: TraitKey; level: Level; text: string; id?: string };
 
 function ResultsPage() {
   const { report, resetAll, uiLanguage, setReport } = useAssessment();
   const navigate = useNavigate();
   const location = useLocation();
   const c = useCopy();
-  const [toast, setToast] = useState(null);
-  const [drawn, setDrawn] = useState(null);
+  const [toast, setToast] = useState<string | null>(null);
+  const [drawn, setDrawn] = useState<DeckCard | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const { ripple, applyTone, clearTone } = useToneRipple(traitTones);
   const localeBundle = useMemo(() => getLocaleBundle(uiLanguage), [uiLanguage]);
   const playbook = useMemo(() => getLearningPlaybook(uiLanguage), [uiLanguage]);
   const levelLabels = useMemo(() => getLevelText(uiLanguage), [uiLanguage]);
-  const cardsByLanguage = useMemo(() => localeBundle.cards || {}, [localeBundle]);
+  const cardsByLanguage = useMemo<CardsDeck>(() => localeBundle.cards || ({} as CardsDeck), [localeBundle]);
 
   useEffect(() => {
     if (report) return;
@@ -54,10 +57,10 @@ function ResultsPage() {
   const deck = useMemo(() => {
     if (!report?.generated) return [];
     return report.generated.flatMap((item) => {
-      const level = report.scores[item.domain]?.result || 'neutral';
-      const cards = cardsByLanguage[item.domain]?.[level] || [];
+      const level = (report.scores[item.domain as TraitKey]?.result || 'neutral') as Level;
+      const cards = cardsByLanguage[item.domain as TraitKey]?.[level] || [];
       return cards.map((text) => ({
-        domain: item.domain,
+        domain: item.domain as TraitKey,
         level,
         text
       }));
