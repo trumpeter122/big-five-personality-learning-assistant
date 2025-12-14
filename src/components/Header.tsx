@@ -40,6 +40,12 @@ function Header() {
           >
             {c.navResults}
           </NavLink>
+          <NavLink
+            to="/about"
+            className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
+          >
+            {c.navAbout}
+          </NavLink>
         </nav>
       </div>
       <div className="header-actions">
