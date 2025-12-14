@@ -92,7 +92,8 @@ function ResultsPage() {
   const handleCopyLink = async () => {
     if (!report) return;
     const search = buildShareSearch(report);
-    const url = `${window.location.origin}/results${search ? `?${search}` : ''}`;
+    const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+    const url = `${window.location.origin}${base}/results${search ? `?${search}` : ''}`;
     try {
       if (navigator?.clipboard?.writeText) {
         await navigator.clipboard.writeText(url);
