@@ -3,11 +3,18 @@ import { useAssessment } from '../context/AssessmentContext';
 import { useCopy } from '../hooks/useCopy';
 
 function Home() {
-  const { resetAll } = useAssessment();
+  const { resetAll, setTestMode } = useAssessment();
   const c = useCopy();
   const navigate = useNavigate();
 
   const goTest = () => {
+    setTestMode('full');
+    resetAll();
+    navigate('/test');
+  };
+
+  const goShortTest = () => {
+    setTestMode('short');
     resetAll();
     navigate('/test');
   };
@@ -33,10 +40,14 @@ function Home() {
             <button className="primary" onClick={goTest}>
               {c.startTest}
             </button>
+            <button className="ghost" onClick={goShortTest}>
+              {c.startShort}
+            </button>
             <button className="ghost" onClick={goManual}>
               {c.startManual}
             </button>
           </div>
+          <p className="hint">{c.testAccuracyNote}</p>
         </div>
         <div className="hero-stats">
           <div className="stat">

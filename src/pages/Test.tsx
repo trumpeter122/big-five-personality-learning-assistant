@@ -20,13 +20,16 @@ function TestPage() {
     resetAll,
     language,
     setLanguage,
-    uiLanguage
+    uiLanguage,
+    testMode,
+    setTestMode
   } = useAssessment();
   const navigate = useNavigate();
   const c = useCopy();
 
   const canSubmit = answeredCount === questions.length;
   const traitLabels = getTraitLabels(uiLanguage);
+  const isFullMode = testMode === 'full';
 
   const handleSubmit = () => {
     if (submitTest()) {
@@ -52,7 +55,7 @@ function TestPage() {
         </div>
         <div className="progress">
           <span>
-            {answeredCount}/{questions.length}（Q{questionMeta.rangeStart} - Q{questionMeta.rangeEnd}）
+            {answeredCount}/{questions.length} · Q{questionMeta.rangeStart} - Q{questionMeta.rangeEnd}
           </span>
           <div className="progress-bar">
             <div style={{ width: `${progress}%` }} />
@@ -75,6 +78,29 @@ function TestPage() {
             </select>
           </div>
         </div>
+      </div>
+
+      <div className="mode-switch">
+        <p className="eyebrow">{c.testModeLabel}</p>
+        <div className="segmented">
+          <button
+            className={`segment ${isFullMode ? 'active' : ''}`}
+            onClick={() => setTestMode('full')}
+            aria-pressed={isFullMode}
+          >
+            <span className="segment-title">{c.testModeFull}</span>
+            <p className="hint">{c.testModeFullHint}</p>
+          </button>
+          <button
+            className={`segment ${!isFullMode ? 'active' : ''}`}
+            onClick={() => setTestMode('short')}
+            aria-pressed={!isFullMode}
+          >
+            <span className="segment-title">{c.testModeShort}</span>
+            <p className="hint">{c.testModeShortHint}</p>
+          </button>
+        </div>
+        <p className="hint">{c.testAccuracyNote}</p>
       </div>
 
       <div className="question-list">
@@ -126,6 +152,7 @@ function TestPage() {
             className="ghost"
             onClick={() => {
               resetAll();
+              setTestMode('full');
               navigate('/manual');
             }}
           >
@@ -136,7 +163,7 @@ function TestPage() {
           </button>
         </div>
       </div>
-      {!canSubmit && <p className="hint align-right">需完成全部 120 题以保持严谨性。</p>}
+      {!canSubmit && <p className="hint align-right">{c.testCompleteAll}</p>}
     </section>
   );
 }

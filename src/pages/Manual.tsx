@@ -5,7 +5,7 @@ import { traitIcons } from '../components/icons';
 import { useCopy } from '../hooks/useCopy';
 
 function ManualPage() {
-  const { manualScores, setManualScores, submitManual, resetAll, uiLanguage } = useAssessment();
+  const { manualScores, setManualScores, submitManual, resetAll, uiLanguage, setTestMode } = useAssessment();
   const c = useCopy();
   const navigate = useNavigate();
   const traitLabels = getTraitLabels(uiLanguage);
@@ -54,6 +54,7 @@ function ManualPage() {
             className="ghost"
             onClick={() => {
               resetAll();
+              setTestMode('full');
               navigate('/test');
             }}
           >

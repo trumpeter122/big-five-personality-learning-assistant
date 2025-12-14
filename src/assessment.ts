@@ -139,11 +139,16 @@ export function getLevelText(uiLanguage?: string): Record<Level, string> {
   return levelText;
 }
 
-export function buildQuestions(language: string): QuestionItem[] {
+export type TestMode = 'full' | 'short';
+
+const SHORT_QUESTION_COUNT = 20;
+
+export function buildQuestions(language: string, mode: TestMode = 'full'): QuestionItem[] {
   const questions = questionBank[language] || questionBank['en'];
   const choices = choiceBank[language] || choiceBank['en'];
+  const list = mode === 'short' ? questions.slice(0, SHORT_QUESTION_COUNT) : questions;
 
-  return questions.map((question, index) => ({
+  return list.map((question, index) => ({
     ...question,
     num: index + 1,
     choices: choices[question.keyed]

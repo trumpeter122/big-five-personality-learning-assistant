@@ -9,7 +9,13 @@ import {
   type SetStateAction
 } from 'react';
 import { processAnswers } from '../../docs/packages/score/src/index.ts';
-import { buildQuestions, mapScoresToResults, questionLanguages, languageOptions } from '../assessment';
+import {
+  buildQuestions,
+  mapScoresToResults,
+  questionLanguages,
+  languageOptions,
+  type TestMode
+} from '../assessment';
 import type { QuestionItem, TraitKey, Report, Scores } from '../types';
 
 type AnswerMap = Record<string, { domain: TraitKey; facet?: number; score: number }>;
@@ -37,6 +43,8 @@ interface AssessmentContextValue {
   resetAll: () => void;
   answeredCount: number;
   progress: number;
+  testMode: TestMode;
+  setTestMode: Dispatch<SetStateAction<TestMode>>;
 }
 
 const AssessmentContext = createContext<AssessmentContextValue | null>(null);
@@ -57,6 +65,7 @@ export function AssessmentProvider({ children }: { children: ReactNode }) {
     : questionLanguages[0] || 'en';
   const [language, setLanguage] = useState<string>(defaultQuestionLanguage);
   const [lastAutoLang, setLastAutoLang] = useState<string>(defaultQuestionLanguage);
+  const [testMode, setTestMode] = useState<TestMode>('full');
   const [page, setPage] = useState<number>(0);
   const [answers, setAnswers] = useState<AnswerMap>({});
   const [manualScores, setManualScores] = useState<Record<TraitKey, number>>({
@@ -68,10 +77,10 @@ export function AssessmentProvider({ children }: { children: ReactNode }) {
   });
   const [report, setReport] = useState<Report | null>(null);
 
-  const questions = useMemo<QuestionItem[]>(() => buildQuestions(language), [language]);
+  const questions = useMemo<QuestionItem[]>(() => buildQuestions(language, testMode), [language, testMode]);
   const totalPages = Math.ceil(questions.length / 8);
   const answeredCount = Object.keys(answers).length;
-  const progress = Math.round((answeredCount / questions.length) * 100);
+  const progress = questions.length ? Math.round((answeredCount / questions.length) * 100) : 0;
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -107,6 +116,12 @@ export function AssessmentProvider({ children }: { children: ReactNode }) {
     setPage(0);
     setManualScores({ O: 3, C: 3, E: 3, A: 3, N: 3 });
   };
+
+  useEffect(() => {
+    setAnswers({});
+    setReport(null);
+    setPage(0);
+  }, [testMode]);
 
   const selectAnswer = (question: QuestionItem, choice: { score: number }) => {
     setAnswers((prev) => ({
@@ -148,6 +163,8 @@ export function AssessmentProvider({ children }: { children: ReactNode }) {
     setUiLanguage,
     language,
     setLanguage,
+    testMode,
+    setTestMode,
     questions,
     currentQuestions,
     totalPages,
