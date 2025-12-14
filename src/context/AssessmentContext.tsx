@@ -8,6 +8,7 @@ import {
   type Dispatch,
   type SetStateAction
 } from 'react';
+import { useLocation } from 'react-router-dom';
 import { processAnswers } from '../../docs/packages/score/src/index.ts';
 import {
   buildQuestions,
@@ -16,6 +17,7 @@ import {
   languageOptions,
   type TestMode
 } from '../assessment';
+import { buildReportFromScores, buildShareSearch, parseQueryScores } from '../utils/reportShare';
 import type { QuestionItem, TraitKey, Report, Scores } from '../types';
 
 type AnswerMap = Record<string, { domain: TraitKey; facet?: number; score: number }>;
@@ -75,7 +77,13 @@ export function AssessmentProvider({ children }: { children: ReactNode }) {
     A: 3,
     N: 3
   });
-  const [report, setReport] = useState<Report | null>(null);
+  const location = useLocation();
+  const initialReport = useMemo(() => {
+    if (typeof window === 'undefined') return null;
+    const parsed = parseQueryScores(window.location.search);
+    return parsed ? buildReportFromScores(parsed) : null;
+  }, []);
+  const [report, setReport] = useState<Report | null>(initialReport);
 
   const questions = useMemo<QuestionItem[]>(() => buildQuestions(language, testMode), [language, testMode]);
   const totalPages = Math.ceil(questions.length / 8);
@@ -102,6 +110,19 @@ export function AssessmentProvider({ children }: { children: ReactNode }) {
       setLastAutoLang(target);
     }
   }, [uiLanguage, language, lastAutoLang]);
+
+  useEffect(() => {
+    const parsed = parseQueryScores(location.search);
+    if (!parsed) return;
+    const next = buildReportFromScores(parsed);
+    if (!next) return;
+    setReport((prev) => {
+      if (!prev) return next;
+      const prevSearch = buildShareSearch(prev);
+      const nextSearch = buildShareSearch(next);
+      return prevSearch === nextSearch ? prev : next;
+    });
+  }, [location.search]);
 
   useEffect(() => {
     const maxPage = Math.max(0, Math.ceil(questions.length / 8) - 1);
