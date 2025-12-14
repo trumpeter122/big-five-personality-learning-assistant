@@ -10,9 +10,11 @@ if (!container) {
   throw new Error('Root container missing');
 }
 
+const basePath = import.meta.env.BASE_URL.replace(/\/+$/, '') || '/';
+
 createRoot(container).render(
   <StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename={basePath === '/' ? undefined : basePath}>
       <App />
     </BrowserRouter>
   </StrictMode>
