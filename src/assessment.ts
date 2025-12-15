@@ -118,12 +118,35 @@ const levelTextEn: Record<Level, string> = {
   low: 'Low'
 };
 
-export const traitTones: Record<TraitKey, { accent: string; accent2: string; pill: string }> = {
-  O: { accent: '#1f7a8c', accent2: '#f0b673', pill: 'rgba(31, 122, 140, 0.16)' },
-  C: { accent: '#1e6ea4', accent2: '#c8a15c', pill: 'rgba(30, 110, 164, 0.16)' },
-  E: { accent: '#c44569', accent2: '#f4c27a', pill: 'rgba(196, 69, 105, 0.16)' },
-  A: { accent: '#1b998b', accent2: '#f0b673', pill: 'rgba(27, 153, 139, 0.16)' },
-  N: { accent: '#9c5dd9', accent2: '#f0b673', pill: 'rgba(156, 93, 217, 0.16)' }
+export const traitTones: Record<
+  TraitKey,
+  { accent: string; accent2: string; pill: string }
+> = {
+  O: {
+    accent: '#bc5090',
+    accent2: '#ff6361',
+    pill: 'rgba(188, 80, 144, 0.16)',
+  },
+  C: {
+    accent: '#003f5c',
+    accent2: '#58508d',
+    pill: 'rgba(0, 63, 92, 0.16)',
+  },
+  E: {
+    accent: '#ffa600',
+    accent2: '#003f5c',
+    pill: 'rgba(255, 166, 0, 0.16)',
+  },
+  A: {
+    accent: '#ff6361',
+    accent2: '#ffa600',
+    pill: 'rgba(255, 99, 97, 0.16)',
+  },
+  N: {
+    accent: '#58508d',
+    accent2: '#bc5090',
+    pill: 'rgba(88, 80, 141, 0.16)',
+  },
 };
 
 export const languageOptions = languages;
