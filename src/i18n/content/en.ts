@@ -1,11 +1,11 @@
 import type { TraitLabels, Playbook, CardsDeck, LocaleBundle, Level } from '../../types';
 
 export const labels: TraitLabels = {
-  O: { name: 'Openness', alt: '开放性', tone: 'Curious explorer' },
-  C: { name: 'Conscientiousness', alt: '尽责性', tone: 'Planner & executor' },
-  E: { name: 'Extraversion', alt: '外向性', tone: 'Social driver' },
-  A: { name: 'Agreeableness', alt: '宜人性', tone: 'Collaborator' },
-  N: { name: 'Neuroticism', alt: '神经质', tone: 'Emotional flux' }
+  O: { name: 'Openness', alt: 'Intellect / Openness', tone: 'Curious explorer' },
+  C: { name: 'Conscientiousness', alt: 'Order & drive', tone: 'Planner & executor' },
+  E: { name: 'Extraversion', alt: 'Social energy', tone: 'Social driver' },
+  A: { name: 'Agreeableness', alt: 'Cooperation', tone: 'Collaborator' },
+  N: { name: 'Neuroticism', alt: 'Emotional volatility', tone: 'Emotional flux' }
 };
 
 export const playbook: Playbook = {

@@ -221,7 +221,7 @@ export function getTraitLabels(uiLanguage?: string): TraitLabels {
 
 export function getTraitNames(domain: TraitKey, uiLanguage?: string) {
   const bundle = getLocaleContent(uiLanguage);
-  const labels = (bundle.labels?.[domain] as { name?: string; alt?: string }) || { name: domain, alt: domain };
+  const labels = (bundle.labels?.[domain] as { name?: string; alt?: string }) || { name: domain };
   return {
     main: labels.name || domain,
     alt: labels.alt || labels.name || domain

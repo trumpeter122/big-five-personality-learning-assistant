@@ -4,7 +4,7 @@ export type Level = 'high' | 'neutral' | 'low';
 
 export interface TraitLabel {
   name: string;
-  alt: string;
+  alt?: string;
   tone?: string;
 }
 

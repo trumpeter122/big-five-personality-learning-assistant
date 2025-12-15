@@ -1,4 +1,5 @@
 import { getLearningPlaybook, getLevelText, getTraitNames, getResultText } from '../assessment';
+import { buildShareSearch } from './reportShare';
 import type { Report, Playbook, Level } from '../types';
 import type { CopyBundle } from '../i18n/copy';
 
@@ -26,6 +27,9 @@ const styles = `
   .facets { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 4px; }
   .facet { padding: 6px 8px; background: #f9fafb; border: 1px solid #e5e7eb; font-size: 12px; color: #374151; }
   .strategies ul { margin: 8px 0 0; padding-left: 18px; color: #374151; line-height: 1.5; }
+  .link-card { background: #fff; border: 1px solid #e5e7eb; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .share-link { color: #1d4ed8; font-weight: 700; text-decoration: none; }
+  .share-link:hover { text-decoration: underline; }
   footer { margin-top: 8px; text-align: right; color: #6b7280; font-size: 12px; }
   @media print { body { background: #fff; } .report { margin: 0; } }
 `;
@@ -71,20 +75,21 @@ function buildTraitSections(
           (facet) =>
             `<span class="facet">${facet.title}: ${facet.scoreText || facet.result || ''}</span>`
         ) || [];
+      const hasAlt = names.alt && names.alt !== names.main;
 
       return `
         <article class="trait">
           <div class="trait-head">
             <div>
               <h3 class="trait-title">${names.main}</h3>
-              <div class="meta">${names.alt}</div>
+              ${hasAlt ? `<div class="meta">${names.alt}</div>` : ''}
             </div>
             <span class="chip level ${level}">${levelLabel}</span>
           </div>
           <p class="lead">${description}</p>
           ${
             facets.length
-              ? `<div class="meta">${copy?.pdfFacets || 'Facets'}</div><div class="facets">${facets.join(
+              ? `<div class="meta">${copy.pdfFacets}</div><div class="facets">${facets.join(
                   ''
                 )}</div>`
               : ''
@@ -92,7 +97,7 @@ function buildTraitSections(
           ${
             strategies.length
               ? `<div class="strategies">
-                  <div class="meta">${copy?.pdfStrategies || 'Strategies'}</div>
+                  <div class="meta">${copy.pdfStrategies}</div>
                   <ul>${strategies.map((tip) => `<li>${tip}</li>`).join('')}</ul>
                 </div>`
               : ''
@@ -118,6 +123,9 @@ export function exportReportPdf(
     dateStyle: 'medium',
     timeStyle: 'short'
   }).format(new Date());
+  const shareSearch = buildShareSearch(report);
+  const basePath = (import.meta.env.BASE_URL || '').replace(/\/+$/, '');
+  const shareUrl = `${window.location.origin}${basePath}/results${shareSearch ? `?${shareSearch}` : ''}`;
 
   const summaryRows = buildSummaryRows(report, levelLabels, uiLanguage);
   const traits = buildTraitSections(report, copy, levelLabels, learning, uiLanguage);
@@ -127,34 +135,42 @@ export function exportReportPdf(
     <html>
       <head>
         <meta charset="utf-8" />
-        <title>${copy?.pdfTitle || 'Report'}</title>
+        <title>${copy.pdfTitle}</title>
         <style>${styles}</style>
       </head>
       <body>
         <div class="report">
           <div class="hero">
             <div>
-              <h1>${copy?.pdfTitle || 'Report'}</h1>
-              <h2>${copy?.pdfSubtitle || ''}</h2>
-              <p class="meta">${copy?.pdfGeneratedAt || 'Generated'}: ${timestamp}</p>
+              <h1>${copy.pdfTitle}</h1>
+              <h2>${copy.pdfSubtitle}</h2>
+              <p class="meta">${copy.pdfGeneratedAt}: ${timestamp}</p>
             </div>
-            <div class="badge">${copy?.badge || 'Report'}</div>
+            <div class="badge">${copy.badge}</div>
           </div>
           <table>
             <thead>
               <tr>
-                <th>${copy?.pdfTraitSummary || 'Traits'}</th>
-                <th>${copy?.pdfRawScore || 'Raw'}</th>
-                <th>${copy?.pdfAvgScore || 'Avg'}</th>
-                <th>${copy?.pdfLevel || 'Level'}</th>
+                <th>${copy.pdfTraitSummary}</th>
+                <th>${copy.pdfRawScore}</th>
+                <th>${copy.pdfAvgScore}</th>
+                <th>${copy.pdfLevel}</th>
               </tr>
             </thead>
             <tbody>
               ${summaryRows}
             </tbody>
           </table>
+          <div class="link-card">
+            <div>
+              <p class="meta">${copy.pdfSharePrompt}</p>
+              <a class="share-link" href="${shareUrl}" target="_blank" rel="noopener">
+                ${copy.pdfShareLink}
+              </a>
+            </div>
+          </div>
           ${traits}
-          <footer>${copy?.badge || 'Report'} · ${timestamp}</footer>
+          <footer>${copy.badge} · ${timestamp}</footer>
         </div>
       </body>
     </html>
