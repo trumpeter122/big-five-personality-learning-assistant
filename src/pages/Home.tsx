@@ -71,21 +71,21 @@ function Home() {
       <section className="card panel">
         <div className="panel-header">
           <div>
-            <p className="eyebrow">流程概览</p>
+            <p className="eyebrow">{c.flowOverview}</p>
             <h2>{c.flowTitle}</h2>
           </div>
         </div>
         <div className="question-list">
           <div className="question-card">
-            <p className="question-text">1) 人格测验</p>
+            <p className="question-text">{`1) ${c.flowStepTitles[0]}`}</p>
             <p className="hint">{c.flowSteps[0]}</p>
           </div>
           <div className="question-card">
-            <p className="question-text">2) 维度评分</p>
+            <p className="question-text">{`2) ${c.flowStepTitles[1]}`}</p>
             <p className="hint">{c.flowSteps[1]}</p>
           </div>
           <div className="question-card">
-            <p className="question-text">3) 学习策略生成</p>
+            <p className="question-text">{`3) ${c.flowStepTitles[2]}`}</p>
             <p className="hint">{c.flowSteps[2]}</p>
           </div>
         </div>

@@ -18,7 +18,7 @@ function Header() {
         <p className="eyebrow">{c.badge}</p>
         <div className="brand-row">
           <h1>{c.title}</h1>
-          <div className="pill accent">蓝白 · Mediterranean</div>
+          <div className="pill accent">V1.0</div>
         </div>
         <p className="subtitle">{c.subtitle}</p>
         <nav className="nav-links">

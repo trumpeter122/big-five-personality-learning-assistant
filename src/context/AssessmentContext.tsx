@@ -61,7 +61,7 @@ export function useAssessment(): AssessmentContextValue {
 
 export function AssessmentProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<string>('light');
-  const [uiLanguage, setUiLanguage] = useState<string>('zh');
+  const [uiLanguage, setUiLanguage] = useState<string>('en');
   const defaultQuestionLanguage = questionLanguages.includes('zh-cn')
     ? 'zh-cn'
     : questionLanguages[0] || 'en';
