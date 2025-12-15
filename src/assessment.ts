@@ -106,18 +106,6 @@ const learningPlaybookEn: Playbook = {
   }
 };
 
-export const levelText: Record<Level, string> = {
-  high: '偏高',
-  neutral: '中等',
-  low: '偏低'
-};
-
-const levelTextEn: Record<Level, string> = {
-  high: 'High',
-  neutral: 'Mid',
-  low: 'Low'
-};
-
 export const traitTones: Record<
   TraitKey,
   { accent: string; accent2: string; pill: string }
@@ -152,14 +140,22 @@ export const traitTones: Record<
 export const languageOptions = languages;
 export const questionLanguages = Object.keys(questionBank);
 
-export const isEnglish = (uiLanguage?: string) =>
-  typeof uiLanguage === 'string' && uiLanguage.toLowerCase().startsWith('en');
+const fallbackLevelText: Record<Level, string> =
+  getLocaleContent('en').levelText || {
+    high: 'High',
+    neutral: 'Mid',
+    low: 'Low'
+  };
 
 export function getLevelText(uiLanguage?: string): Record<Level, string> {
-  if (isEnglish(uiLanguage)) {
-    return levelTextEn;
-  }
-  return levelText;
+  const bundle = getLocaleContent(uiLanguage);
+  const localized = bundle.levelText || {};
+
+  return {
+    high: localized.high || fallbackLevelText.high,
+    neutral: localized.neutral || fallbackLevelText.neutral,
+    low: localized.low || fallbackLevelText.low
+  };
 }
 
 export type TestMode = 'full' | 'short';

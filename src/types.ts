@@ -73,4 +73,5 @@ export interface LocaleBundle {
   playbook?: Playbook;
   cards?: CardsDeck;
   resultText?: Partial<Record<TraitKey, Partial<Record<Level, string>>>>;
+  levelText?: Partial<Record<Level, string>>;
 }

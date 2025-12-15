@@ -96,8 +96,12 @@ export function AssessmentProvider({ children }: { children: ReactNode }) {
 
   const findQuestionLangForUi = (uiCode: string | null | undefined) => {
     if (!uiCode) return null;
-    if (questionLanguages.includes(uiCode)) return uiCode;
-    const found = languageOptions.find((lang) => lang.code.toLowerCase().startsWith(uiCode.toLowerCase()));
+    const normalized = uiCode.toLowerCase();
+    if (questionLanguages.includes(normalized)) return normalized;
+    if (normalized.startsWith('zh-hk') || normalized.startsWith('zh-tw') || normalized.startsWith('zh-hant')) {
+      return 'zh-hk';
+    }
+    const found = languageOptions.find((lang) => lang.code.toLowerCase().startsWith(normalized));
     return found?.code || null;
   };
 

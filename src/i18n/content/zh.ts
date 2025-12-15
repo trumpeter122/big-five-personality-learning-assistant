@@ -1,4 +1,4 @@
-import type { TraitLabels, Playbook, CardsDeck, LocaleBundle } from '../../types';
+import type { TraitLabels, Playbook, CardsDeck, LocaleBundle, Level } from '../../types';
 
 export const labels: TraitLabels = {
   O: { name: '开放性', alt: 'Openness', tone: '创意探索' },
@@ -197,11 +197,18 @@ export const resultText: LocaleBundle['resultText'] = {
   }
 };
 
+export const levelText: Record<Level, string> = {
+  high: '偏高',
+  neutral: '中等',
+  low: '偏低'
+};
+
 const bundle: LocaleBundle = {
   labels,
   playbook,
   cards,
-  resultText
+  resultText,
+  levelText
 };
 
 export default bundle;

@@ -18,7 +18,7 @@ type AboutContent = {
   note: string;
 };
 
-const aboutContent: Record<'en' | 'zh', AboutContent> = {
+const aboutContent: Record<'en' | 'zh' | 'zh-hk', AboutContent> = {
   en: {
     heroBadge: 'Theory overview',
     heroTitle: 'Where the Big Five came from',
@@ -250,17 +250,139 @@ const aboutContent: Record<'en' | 'zh', AboutContent> = {
       }
     ],
     note: '基于词汇假设与因子分析的积累：五个跨语言复现的广义维度，分面让画像更细腻。'
+  },
+  'zh-hk': {
+    heroBadge: '理論背景',
+    heroTitle: '大五人格是如何形成的',
+    heroSubtitle:
+      '五因素模型源自詞彙假設：重要的性格差異會沉澱成日常用語。對這些描述做因子分析，跨多種語言都能看到五個穩定維度。',
+    heroPills: ['詞彙假設', '因子分析證據', '連續刻度而非類型'],
+    heroStats: [
+      {
+        label: '核心思想',
+        value: '語言承載特質',
+        hint: '從 Galton（1884）到 Allport & Odbert（1936）整理出數千形容詞，假設關鍵特質藏在日常詞彙裡。'
+      },
+      {
+        label: '證據來源',
+        value: '跨數據的因子分析',
+        hint: 'Tupes & Christal（1958/61）、Norman（1963）、Digman（1980s）、Costa & McCrae（1992）都收斂到五個維度。'
+      },
+      {
+        label: '維度含義',
+        value: '連續刻度而非標籤',
+        hint: '每個人在五個維度上都有位置；分面讓畫像更細，而不是單純的高/低標籤。'
+      }
+    ],
+    pillarsTitle: '大五模型的理論基石',
+    pillarsHint: '為什麼五個維度會反復出現。',
+    pillars: [
+      {
+        title: '詞彙起點',
+        body: '從日常詞彙出發。Allport & Odbert 把詞典轉成 4504 個特質形容詞，其他語言也能得到類似清單。'
+      },
+      {
+        title: '連續維度',
+        body: '外向、宜人、責任、神經質、開放性都是刻度，不是「類型」；高低是傾向，而非好壞。'
+      },
+      {
+        title: '相對獨立',
+        body: '各維度大體正交。一個維度高並不強迫另一維度呈現特定模式，因此畫像保持細膩。'
+      },
+      {
+        title: '跨語言復現',
+        body: '無論英語、荷蘭語、德語等研究，因子分析都能得到相似的五個簇，兼顧普遍結構與本地差異。'
+      }
+    ],
+    guidelinesTitle: '簡史',
+    guidelinesHint: '從早期詞彙整理到今天的五因素模型。',
+    guidelines: [
+      {
+        title: '1884 · Galton',
+        detail: '提出用語言挖掘人格分類——詞彙假設的最早表述。'
+      },
+      {
+        title: '1936 · Allport & Odbert',
+        detail: '從詞典整理出 4504 個特質形容詞，成為後續因子分析的數據基礎。'
+      },
+      {
+        title: '1940s–1950s · Cattell, Fiske',
+        detail: '將清單縮減並提出 16 個因子（16PF），在同儕評分裡又觀察到五個更高階因子。'
+      },
+      {
+        title: '1958/61 · Tupes & Christal',
+        detail: '分析空軍軍官的同儕評分，反覆得到五個維度（Surgency、Agreeableness、Dependability、Emotional Stability、Culture）。'
+      },
+      {
+        title: '1963 · Norman',
+        detail: '複製五因素並改名，隨後與 Goldberg 的工作奠定了 OCEAN 的現代命名。'
+      },
+      {
+        title: '1980s–1992 · Digman；Costa & McCrae',
+        detail: '綜合既有研究，NEO 模型擴展成五因素模型（NEO PI-R），成為當下主流命名。'
+      },
+      {
+        title: '1990s · 國際人格題庫',
+        detail: 'Goldberg、Hofstee 等建立開放多語題庫（IPIP），讓研究與應用更可比。'
+      }
+    ],
+    traitsTitle: '五個維度一覽',
+    traitsHint: '每個維度是連續刻度，並有跨文化共通的分面。',
+    traits: [
+      {
+        key: 'O',
+        name: '開放性',
+        summary: '好奇心、模式感知、想像力，對概念和審美的舒適度。',
+        high: '喜歡新鮮和複雜，樂於用隱喻連接概念。',
+        low: '偏好已有方法與清晰結構，重視傳統與驗證。'
+      },
+      {
+        key: 'C',
+        name: '責任心',
+        summary: '自我調節、計劃性、可靠性與衝動控制。',
+        high: '條理清晰，重視秩序與穩步達成。',
+        low: '機動靈活，可能推遲或淡化固定結構。'
+      },
+      {
+        key: 'E',
+        name: '外向性',
+        summary: '能量來源、表達性、社交活力與對獎賞的敏感度。',
+        high: '被人和節奏激活，表達直接，常邊說邊想。',
+        low: '需要獨處恢復，節奏沉穩，先內化再表達。'
+      },
+      {
+        key: 'A',
+        name: '宜人性',
+        summary: '合作風格、共情、信任與衝突取向。',
+        high: '溫暖協作，樂觀看待他人動機。',
+        low: '直接辯證，設防心較高，習慣先驗證再信任。'
+      },
+      {
+        key: 'N',
+        name: '情緒穩定性（神經質）',
+        summary: '對壓力、威脅與負性情緒的敏感度。',
+        high: '對風險敏感，遇到不確定時情緒起伏更快。',
+        low: '在壓力下相對平穩，少糾結，恢復較快。'
+      }
+    ],
+    note: '基於詞彙假設與因子分析的積累：五個跨語言復現的廣義維度，分面讓畫像更細膩。'
   }
 };
 
 function AboutPage() {
   const { uiLanguage } = useAssessment();
-  const lang: 'en' | 'zh' = uiLanguage.startsWith('zh') ? 'zh' : 'en';
+  const normalized = (uiLanguage || '').toLowerCase();
+  const lang: 'en' | 'zh' | 'zh-hk' =
+    normalized.startsWith('zh-hk') || normalized.startsWith('zh-tw') || normalized.startsWith('zh-hant')
+      ? 'zh-hk'
+      : normalized.startsWith('zh')
+        ? 'zh'
+        : 'en';
   const c = aboutContent[lang];
-  const modelLabel = lang === 'zh' ? '大五模型' : 'Five-Factor Model';
-  const interpretationLabel = lang === 'zh' ? '解读指南' : 'Interpretation';
-  const highLabel = lang === 'zh' ? '高分' : 'High';
-  const lowLabel = lang === 'zh' ? '低分' : 'Low';
+  const modelLabel = lang === 'en' ? 'Five-Factor Model' : '大五模型';
+  const interpretationLabel = lang === 'zh-hk' ? '解讀指南' : lang === 'zh' ? '解读指南' : 'Interpretation';
+  const highLabel = lang === 'en' ? 'High' : '高分';
+  const lowLabel = lang === 'en' ? 'Low' : '低分';
 
   return (
     <>
