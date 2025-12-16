@@ -457,7 +457,7 @@ input[type='range'] {
   padding: 18px;
   background: linear-gradient(120deg, rgba(31, 110, 164, 0.08), rgba(230, 177, 100, 0.06));
   display: grid;
-  gap: 12px;
+  gap: 32px;
   overflow: hidden;
 }
 

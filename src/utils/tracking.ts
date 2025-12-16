@@ -35,6 +35,13 @@ const toDateKey = (ms: number) => {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 };
 
+const fromDateKey = (key: string) => {
+  const safeKey = key?.trim();
+  if (!safeKey) return null;
+  const parsed = Date.parse(`${safeKey}T12:00:00`);
+  return Number.isNaN(parsed) ? null : parsed;
+};
+
 const diffDays = (a: string, b: string) => {
   const aDate = new Date(`${a}T00:00:00`);
   const bDate = new Date(`${b}T00:00:00`);
@@ -147,4 +154,65 @@ export const buildCsv = (entries: DrawLogEntry[]) => {
   );
 
   return [header, ...rows].join('\n');
+};
+
+const parseCsvLine = (line: string) => {
+  const values: string[] = [];
+  let current = '';
+  let inQuotes = false;
+
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    if (char === '"' && (i === 0 || line[i - 1] !== '\\')) {
+      if (inQuotes && line[i + 1] === '"') {
+        current += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+      continue;
+    }
+    if (char === ',' && !inQuotes) {
+      values.push(current);
+      current = '';
+      continue;
+    }
+    current += char;
+  }
+  values.push(current);
+  return values.map((v) => v.trim());
+};
+
+export const importTrackingFromCsv = (csv: string): TrackingState => {
+  if (!csv) return emptyTracking;
+  const lines = csv.split(/\r?\n/).filter((line) => line.trim().length > 0);
+  if (lines.length <= 1) return emptyTracking;
+
+  const entries: DrawLogEntry[] = [];
+  const [, ...rows] = lines;
+  rows.forEach((row, idx) => {
+    const cells = parseCsvLine(row);
+    if (cells.length < 5) return;
+    const [drawnAtStr, completedAtStr, trait, level, text] = cells;
+    if (!['O', 'C', 'E', 'A', 'N'].includes(trait)) return;
+    if (!['high', 'neutral', 'low'].includes(level)) return;
+
+    const drawnAt = fromDateKey(drawnAtStr);
+    if (!drawnAt) return;
+    const completedAt = completedAtStr ? fromDateKey(completedAtStr) || undefined : undefined;
+    entries.push({
+      id: `import-${idx}-${drawnAt}`,
+      trait: trait as TraitKey,
+      level: level as Level,
+      text: text || '',
+      drawnAt,
+      completedAt
+    });
+  });
+
+  const sorted = entries.sort((a, b) => b.drawnAt - a.drawnAt).slice(0, MAX_ENTRIES);
+  return {
+    entries: sorted,
+    streak: recomputeStreak(sorted)
+  };
 };

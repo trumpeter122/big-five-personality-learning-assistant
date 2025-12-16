@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAssessment } from '../context/AssessmentContext';
 import {
@@ -19,6 +19,7 @@ import {
   emptyTracking,
   loadTracking,
   recordDraw,
+  importTrackingFromCsv,
   resetTracking,
   saveTracking,
   setEntryCompletion,
@@ -41,6 +42,7 @@ function ResultsPage() {
   const [showAllEntries, setShowAllEntries] = useState(false);
   const { ripple, applyTone, clearTone } = useToneRipple(traitTones);
   const gachaBodyRef = useRef<HTMLDivElement | null>(null);
+  const importInputRef = useRef<HTMLInputElement | null>(null);
   const localeBundle = useMemo(() => getLocaleBundle(uiLanguage), [uiLanguage]);
   const playbook = useMemo(() => getLearningPlaybook(uiLanguage), [uiLanguage]);
   const levelLabels = useMemo(() => getLevelText(uiLanguage), [uiLanguage]);
@@ -176,6 +178,34 @@ function ResultsPage() {
     if (!tracking.entries.length) return;
     if (!window.confirm(c.trackerResetConfirm)) return;
     updateTracking(() => resetTracking());
+  };
+
+  const handleImportClick = () => {
+    importInputRef.current?.click();
+  };
+
+  const handleImportFile = (evt: ChangeEvent<HTMLInputElement>) => {
+    const file = evt.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const text = String(reader.result || '');
+        const imported = importTrackingFromCsv(text);
+        if (!imported.entries.length) {
+          throw new Error('empty');
+        }
+        setTracking(imported);
+        saveTracking(imported);
+        setToast(c.trackerImportDone);
+      } catch (err) {
+        console.error(err);
+        setToast(c.trackerImportFailed);
+      } finally {
+        evt.target.value = '';
+      }
+    };
+    reader.readAsText(file);
   };
 
   if (!hasReport) {
@@ -321,6 +351,16 @@ function ResultsPage() {
           </button>
         )}
         <div className="tracker-actions">
+          <input
+            ref={importInputRef}
+            type="file"
+            accept=".csv,text/csv"
+            style={{ display: 'none' }}
+            onChange={handleImportFile}
+          />
+          <button className="ghost" onClick={handleImportClick}>
+            {c.trackerImport}
+          </button>
           <button className="ghost" onClick={handleExportLog} disabled={!tracking.entries.length}>
             {c.trackerExport}
           </button>

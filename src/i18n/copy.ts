@@ -87,6 +87,7 @@ export const copy = {
     trackerCurrent: '当前连击',
     trackerLongest: '最高连击',
     trackerExport: '导出 CSV',
+    trackerImport: '导入记录 (CSV)',
     trackerReset: '重置记录',
     trackerResetConfirm: '清空所有记录？',
     trackerEmpty: '抽一张卡开始记录。',
@@ -94,6 +95,8 @@ export const copy = {
     trackerLogged: '已记录',
     trackerShowAll: '展开全部记录',
     trackerCollapse: '收起',
+    trackerImportDone: '导入完成',
+    trackerImportFailed: '导入失败，请检查 CSV 格式。',
     uiLangLabel: '界面语言',
     questionLangLabel: '题目语言'
   },
@@ -185,6 +188,7 @@ export const copy = {
     trackerCurrent: '當前連擊',
     trackerLongest: '最高連擊',
     trackerExport: '匯出 CSV',
+    trackerImport: '導入紀錄 (CSV)',
     trackerReset: '重置紀錄',
     trackerResetConfirm: '清空所有紀錄？',
     trackerEmpty: '抽一張卡開始記錄。',
@@ -192,6 +196,8 @@ export const copy = {
     trackerLogged: '已記錄',
     trackerShowAll: '展開全部紀錄',
     trackerCollapse: '收起',
+    trackerImportDone: '導入完成',
+    trackerImportFailed: '導入失敗，請檢查 CSV 格式。',
     uiLangLabel: '介面語言',
     questionLangLabel: '題目語言'
   },
@@ -284,6 +290,7 @@ export const copy = {
     trackerCurrent: 'Current streak',
     trackerLongest: 'Longest',
     trackerExport: 'Export log (CSV)',
+    trackerImport: 'Import log (CSV)',
     trackerReset: 'Reset log',
     trackerResetConfirm: 'Reset all logged cards?',
     trackerEmpty: 'Draw a card to start tracking.',
@@ -291,6 +298,8 @@ export const copy = {
     trackerLogged: 'Logged',
     trackerShowAll: 'Show all',
     trackerCollapse: 'Show less',
+    trackerImportDone: 'Import complete',
+    trackerImportFailed: 'Import failed. Check the CSV format.',
     uiLangLabel: 'UI language',
     questionLangLabel: 'Question language'
   }
