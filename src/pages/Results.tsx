@@ -38,13 +38,17 @@ function ResultsPage() {
   const [showModal, setShowModal] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [tracking, setTracking] = useState<TrackingState>(emptyTracking);
+  const [showAllEntries, setShowAllEntries] = useState(false);
   const { ripple, applyTone, clearTone } = useToneRipple(traitTones);
   const gachaBodyRef = useRef<HTMLDivElement | null>(null);
   const localeBundle = useMemo(() => getLocaleBundle(uiLanguage), [uiLanguage]);
   const playbook = useMemo(() => getLearningPlaybook(uiLanguage), [uiLanguage]);
   const levelLabels = useMemo(() => getLevelText(uiLanguage), [uiLanguage]);
   const cardsByLanguage = useMemo<CardsDeck>(() => localeBundle.cards || ({} as CardsDeck), [localeBundle]);
-  const recentEntries = useMemo(() => tracking.entries.slice(0, 5), [tracking.entries]);
+  const entriesToShow = useMemo(
+    () => (showAllEntries ? tracking.entries : tracking.entries.slice(0, 5)),
+    [tracking.entries, showAllEntries]
+  );
 
   useEffect(() => {
     setTracking(loadTracking());
@@ -276,8 +280,8 @@ function ResultsPage() {
           </div>
         </div>
         <div className="tracker-list">
-          {recentEntries.length ? (
-            recentEntries.map((entry) => {
+          {entriesToShow.length ? (
+            entriesToShow.map((entry) => {
               const names = getTraitNames(entry.trait, uiLanguage);
               const Icon = traitIcons[entry.trait];
               return (
@@ -311,6 +315,11 @@ function ResultsPage() {
             <p className="hint">{c.trackerEmpty}</p>
           )}
         </div>
+        {tracking.entries.length > 5 && (
+          <button className="ghost" onClick={() => setShowAllEntries((prev) => !prev)}>
+            {showAllEntries ? c.trackerCollapse : c.trackerShowAll}
+          </button>
+        )}
         <div className="tracker-actions">
           <button className="ghost" onClick={handleExportLog} disabled={!tracking.entries.length}>
             {c.trackerExport}

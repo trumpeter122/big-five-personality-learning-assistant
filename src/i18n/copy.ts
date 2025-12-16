@@ -92,6 +92,8 @@ export const copy = {
     trackerEmpty: '抽一张卡开始记录。',
     trackerMarkDone: '完成',
     trackerLogged: '已记录',
+    trackerShowAll: '展开全部记录',
+    trackerCollapse: '收起',
     uiLangLabel: '界面语言',
     questionLangLabel: '题目语言'
   },
@@ -188,6 +190,8 @@ export const copy = {
     trackerEmpty: '抽一張卡開始記錄。',
     trackerMarkDone: '完成',
     trackerLogged: '已記錄',
+    trackerShowAll: '展開全部紀錄',
+    trackerCollapse: '收起',
     uiLangLabel: '介面語言',
     questionLangLabel: '題目語言'
   },
@@ -285,6 +289,8 @@ export const copy = {
     trackerEmpty: 'Draw a card to start tracking.',
     trackerMarkDone: 'Done',
     trackerLogged: 'Logged',
+    trackerShowAll: 'Show all',
+    trackerCollapse: 'Show less',
     uiLangLabel: 'UI language',
     questionLangLabel: 'Question language'
   }
