@@ -575,6 +575,100 @@ input[type='range'] {
   line-height: 1.5;
 }
 
+.gacha-tracker {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 14px;
+  display: grid;
+  gap: 10px;
+  box-shadow: 0 8px 16px rgba(15, 51, 90, 0.05);
+}
+
+.tracker-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.tracker-stats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tracker-list {
+  display: grid;
+  gap: 8px;
+}
+
+.tracker-item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  background: var(--tile);
+}
+
+.tracker-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.tracker-check input {
+  accent-color: var(--accent);
+  width: 18px;
+  height: 18px;
+}
+
+.tracker-detail {
+  display: grid;
+  gap: 6px;
+}
+
+.tracker-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tracker-text {
+  margin: 0;
+  color: var(--text);
+  line-height: 1.5;
+  font-weight: 700;
+}
+
+.tracker-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tracker-tag {
+  padding: 4px 8px;
+  background: rgba(31, 110, 164, 0.12);
+  border: 1px solid var(--border);
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.tracker-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .modal-backdrop {
   position: fixed;
   inset: 0;

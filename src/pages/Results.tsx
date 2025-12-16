@@ -14,6 +14,16 @@ import { useCopy } from '../hooks/useCopy';
 import { exportReportPdf } from '../utils/exportReport';
 import { useToneRipple } from '../hooks/useToneRipple';
 import { buildReportFromScores, parseQueryScores, buildShareSearch } from '../utils/reportShare';
+import {
+  buildCsv,
+  emptyTracking,
+  loadTracking,
+  recordDraw,
+  resetTracking,
+  saveTracking,
+  setEntryCompletion,
+  type TrackingState
+} from '../utils/tracking';
 import type { TraitKey, Level, Report, CardsDeck } from '../types';
 
 type DeckCard = { domain: TraitKey; level: Level; text: string; id?: string };
@@ -27,12 +37,26 @@ function ResultsPage() {
   const [drawn, setDrawn] = useState<DeckCard | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [tracking, setTracking] = useState<TrackingState>(emptyTracking);
   const { ripple, applyTone, clearTone } = useToneRipple(traitTones);
   const gachaBodyRef = useRef<HTMLDivElement | null>(null);
   const localeBundle = useMemo(() => getLocaleBundle(uiLanguage), [uiLanguage]);
   const playbook = useMemo(() => getLearningPlaybook(uiLanguage), [uiLanguage]);
   const levelLabels = useMemo(() => getLevelText(uiLanguage), [uiLanguage]);
   const cardsByLanguage = useMemo<CardsDeck>(() => localeBundle.cards || ({} as CardsDeck), [localeBundle]);
+  const recentEntries = useMemo(() => tracking.entries.slice(0, 5), [tracking.entries]);
+
+  useEffect(() => {
+    setTracking(loadTracking());
+  }, []);
+
+  const updateTracking = (updater: (state: TrackingState) => TrackingState) => {
+    setTracking((prev) => {
+      const next = updater(prev);
+      saveTracking(next);
+      return next;
+    });
+  };
 
   useEffect(() => {
     if (report) return;
@@ -76,13 +100,24 @@ function ResultsPage() {
   const drawCard = () => {
     if (!deck.length) return;
     const pick = deck[Math.floor(Math.random() * deck.length)];
+    const stamp = Date.now();
+    const entryId = `${pick.domain}-${stamp}`;
     const rect = gachaBodyRef.current?.getBoundingClientRect();
     const pulseOrigin = rect
       ? { clientX: rect.left + rect.width / 2, clientY: rect.top + rect.height / 2 }
       : undefined;
 
-    setDrawn({ ...pick, id: `${pick.domain}-${Math.random()}` });
+    setDrawn({ ...pick, id: entryId });
     applyTone(pick.domain, pulseOrigin);
+    updateTracking((state) =>
+      recordDraw(state, {
+        id: entryId,
+        trait: pick.domain,
+        level: pick.level,
+        text: pick.text,
+        drawnAt: stamp
+      })
+    );
     setShowModal(true);
   };
 
@@ -113,6 +148,30 @@ function ResultsPage() {
       setToast(c.shareCopyFailed);
     }
     setTimeout(() => setToast(null), 2000);
+  };
+
+  const handleToggleCompletion = (entryId: string, completed: boolean) => {
+    updateTracking((state) => setEntryCompletion(state, entryId, completed));
+  };
+
+  const handleExportLog = () => {
+    if (!tracking.entries.length) return;
+    const csv = buildCsv(tracking.entries);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'gacha-log.csv';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 400);
+  };
+
+  const handleResetTracking = () => {
+    if (!tracking.entries.length) return;
+    if (!window.confirm(c.trackerResetConfirm)) return;
+    updateTracking(() => resetTracking());
   };
 
   if (!hasReport) {
@@ -198,6 +257,67 @@ function ResultsPage() {
               <p className="hint">{c.gachaEmpty}</p>
             </div>
           )}
+        </div>
+      </div>
+
+      <div className="gacha-tracker">
+        <div className="tracker-head">
+          <div>
+            <p className="eyebrow">{c.trackerTitle}</p>
+            <p className="hint">{c.trackerHint}</p>
+          </div>
+          <div className="tracker-stats">
+            <span className="pill soft">
+              {c.trackerCurrent}: {tracking.streak.current || 0}d
+            </span>
+            <span className="pill soft">
+              {c.trackerLongest}: {tracking.streak.longest || 0}d
+            </span>
+          </div>
+        </div>
+        <div className="tracker-list">
+          {recentEntries.length ? (
+            recentEntries.map((entry) => {
+              const names = getTraitNames(entry.trait, uiLanguage);
+              const Icon = traitIcons[entry.trait];
+              return (
+                <div className="tracker-item" key={entry.id}>
+                  <label className="tracker-check">
+                    <input
+                      type="checkbox"
+                      checked={!!entry.completedAt}
+                      onChange={(e) => handleToggleCompletion(entry.id, e.target.checked)}
+                    />
+                    <span>{c.trackerMarkDone}</span>
+                  </label>
+                  <div className="tracker-detail">
+                    <div className="tracker-row">
+                      <span className="gacha-pill">
+                        {Icon && <Icon />}
+                        {names.main}
+                      </span>
+                      <span className={`level ${entry.level}`}>{levelLabels[entry.level]}</span>
+                    </div>
+                    <p className="tracker-text">{entry.text}</p>
+                    <div className="tracker-meta">
+                      <span className="hint">{new Date(entry.drawnAt).toLocaleDateString()}</span>
+                      {entry.completedAt && <span className="tracker-tag">{c.trackerLogged}</span>}
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <p className="hint">{c.trackerEmpty}</p>
+          )}
+        </div>
+        <div className="tracker-actions">
+          <button className="ghost" onClick={handleExportLog} disabled={!tracking.entries.length}>
+            {c.trackerExport}
+          </button>
+          <button className="ghost" onClick={handleResetTracking} disabled={!tracking.entries.length}>
+            {c.trackerReset}
+          </button>
         </div>
       </div>
 
