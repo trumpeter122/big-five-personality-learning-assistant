@@ -251,9 +251,9 @@ export const copy = {
     strategyLabel: 'Study strategies',
     gachaTitle: 'Gacha',
     gachaSubtitle: 'Random action card',
-    gachaHint: 'Draw a task from your trait-based deck to add fun and momentum.',
+    gachaHint: 'Let your trait deck call the next move—draw and run the experiment.',
     draw: 'Draw one',
-    gachaEmpty: 'Click “Draw one” to pull an action card from your deck.',
+    gachaEmpty: 'Click “Draw one” when you want to see what your deck serves up.',
     gachaToday: 'Today’s card',
     uiLangLabel: 'UI language',
     questionLangLabel: 'Question language'

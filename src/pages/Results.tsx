@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAssessment } from '../context/AssessmentContext';
 import {
@@ -28,6 +28,7 @@ function ResultsPage() {
   const [showModal, setShowModal] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const { ripple, applyTone, clearTone } = useToneRipple(traitTones);
+  const gachaBodyRef = useRef<HTMLDivElement | null>(null);
   const localeBundle = useMemo(() => getLocaleBundle(uiLanguage), [uiLanguage]);
   const playbook = useMemo(() => getLearningPlaybook(uiLanguage), [uiLanguage]);
   const levelLabels = useMemo(() => getLevelText(uiLanguage), [uiLanguage]);
@@ -75,7 +76,13 @@ function ResultsPage() {
   const drawCard = () => {
     if (!deck.length) return;
     const pick = deck[Math.floor(Math.random() * deck.length)];
+    const rect = gachaBodyRef.current?.getBoundingClientRect();
+    const pulseOrigin = rect
+      ? { clientX: rect.left + rect.width / 2, clientY: rect.top + rect.height / 2 }
+      : undefined;
+
     setDrawn({ ...pick, id: `${pick.domain}-${Math.random()}` });
+    applyTone(pick.domain, pulseOrigin);
     setShowModal(true);
   };
 
@@ -159,22 +166,37 @@ function ResultsPage() {
           <div>
             <p className="eyebrow">{c.gachaTitle}</p>
             <h3>{c.gachaSubtitle}</h3>
-            <p className="hint">{c.gachaHint}</p>
+            <p className="hint gacha-hint">{c.gachaHint}</p>
           </div>
-          <button className="primary" onClick={drawCard} disabled={!deck.length}>
-            {c.draw}
-          </button>
+          <div className="gacha-actions">
+            <button className="primary" onClick={drawCard} disabled={!deck.length}>
+              {c.draw}
+            </button>
+            <span className="pill soft">{c.gachaToday}</span>
+          </div>
         </div>
-        <div className="gacha-body">
+        <div className="gacha-body" ref={gachaBodyRef}>
           {drawn ? (
-            <div className="gacha-card">
+            <div className="gacha-card" key={drawn.id}>
               <div className="gacha-meta">
+                {(() => {
+                  const names = getTraitNames(drawn.domain, uiLanguage);
+                  const Icon = traitIcons[drawn.domain];
+                  return (
+                    <span className="gacha-pill">
+                      {Icon && <Icon />}
+                      {names.main}
+                    </span>
+                  );
+                })()}
                 <span className={`level ${drawn.level}`}>{levelLabels[drawn.level]}</span>
               </div>
               <p className="gacha-text">{drawn.text}</p>
             </div>
           ) : (
-            <p className="hint">{c.gachaEmpty}</p>
+            <div className="gacha-placeholder">
+              <p className="hint">{c.gachaEmpty}</p>
+            </div>
           )}
         </div>
       </div>
@@ -213,7 +235,7 @@ function ResultsPage() {
               <div className="modal-body">
                 <p className="label">{c.gachaToday}</p>
                 <p className="modal-text">{drawn.text}</p>
-                <p className="hint">{c.gachaHint}</p>
+                {/* <p className="hint">{c.gachaHint}</p> */}
               </div>
             </div>
           </div>
@@ -232,8 +254,8 @@ function ResultsPage() {
             <div
               key={item.domain}
               className="result-card"
-              onMouseEnter={(e) => applyTone(item.domain, e)}
-              onMouseLeave={clearTone}
+            // onMouseEnter={(e) => applyTone(item.domain, e)}
+            // onMouseLeave={clearTone}
             >
               <div className="result-head">
                 <div
